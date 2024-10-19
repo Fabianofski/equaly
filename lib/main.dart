@@ -12,6 +12,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Equaly',
       theme: ThemeData(
+        fontFamily: 'Open Sans',
+        appBarTheme: const AppBarTheme(
+          color: Color(0xFFEEF4FC),
+        ),
+        scaffoldBackgroundColor: const Color(0xFFEEF4FC),
+        canvasColor: const Color(0xFFEEF4FC),
         useMaterial3: true,
       ),
       home: const HomePage(title: 'Flutter Demo Home Page'),
@@ -28,11 +34,10 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(80),
+        preferredSize: const Size.fromHeight(110),
         child: AppBar(
-          backgroundColor: Colors.white,
           elevation: 0,
-          toolbarHeight: 100,
+          toolbarHeight: 110,
           title: Padding(
             padding: const EdgeInsets.only(top: 20.0),
             child: Column(
@@ -42,33 +47,27 @@ class HomePage extends StatelessWidget {
                   'Übersicht',
                   style: TextStyle(
                     color: Colors.grey,
-                    fontSize: 14,
+                    fontSize: 18,
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
                 RichText(
                   text: const TextSpan(
+                    style: TextStyle(
+                      fontSize: 24,
+                      color: Colors.black,
+                    ),
                     children: [
                       TextSpan(
                         text: 'Hi, ',
                         style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 20,
                           fontWeight: FontWeight.normal,
                         ),
                       ),
                       TextSpan(
-                        text: 'Fabian! ',
+                        text: 'Fabian! 👋',
                         style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 20,
                           fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      WidgetSpan(
-                        child: Padding(
-                          padding: EdgeInsets.only(left: 4.0),
-                          child: Icon(Icons.waving_hand, color: Colors.amber),
                         ),
                       ),
                     ],
@@ -79,33 +78,51 @@ class HomePage extends StatelessWidget {
           ),
         ),
       ),
-      body: const MyBottomSheet(),
-      bottomNavigationBar: BottomNavigationBar(items: const [
-        BottomNavigationBarItem(label: "Home", icon: Icon(Icons.home, color: Colors.blue)),
-        BottomNavigationBarItem(label: "List", icon: Icon(Icons.list, color: Colors.blue)),
-        BottomNavigationBarItem(label: "Settings", icon: Icon(Icons.settings, color: Colors.blue)),
-        BottomNavigationBarItem(label: "Profile", icon: Icon(Icons.person, color: Colors.blue)),
-      ])
+      body: const HomeBody(),
+      bottomNavigationBar: BottomNavigationBar(elevation: 0, items: const [
+        BottomNavigationBarItem(
+            label: "Home", icon: Icon(Icons.home, color: Colors.blue)),
+        BottomNavigationBarItem(
+            label: "List", icon: Icon(Icons.list, color: Colors.blue)),
+        BottomNavigationBarItem(
+            label: "Settings", icon: Icon(Icons.settings, color: Colors.blue)),
+        BottomNavigationBarItem(
+            label: "Profile", icon: Icon(Icons.person, color: Colors.blue)),
+      ]),
     );
   }
 }
 
-class MyBottomSheet extends StatelessWidget {
-  const MyBottomSheet({super.key});
+class HomeBody extends StatelessWidget {
+  const HomeBody({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-        onPressed: () {
-          showModalBottomSheet(
-              context: context,
-              showDragHandle: true,
-              builder: (BuildContext context) {
-                return Container(
-                  height: 400,
-                );
-              });
-        },
-        child: const Text("show bottom modal"));
+    return GridView.count(
+      crossAxisCount: 2,
+      padding: const EdgeInsets.all(16),
+      crossAxisSpacing: 16,
+      mainAxisSpacing: 16,
+      children: [
+        Container(
+          decoration: const BoxDecoration(
+            color: Color(0x883AC828),
+            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+          ),
+        ),
+        Container(
+          decoration: const BoxDecoration(
+            color: Color(0x88E2D66A),
+            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+          ),
+        ),
+        Container(
+          decoration: const BoxDecoration(
+            color: Color(0x8815376A),
+            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+          ),
+        ),
+      ],
+    );
   }
 }

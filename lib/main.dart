@@ -42,12 +42,14 @@ class AppContainer extends StatefulWidget {
 
 class _AppContainerState extends State<AppContainer> {
   int _currentIndex = 0;
-  List<Widget> body = const [
-    HomePage(),
-    ListPage(),
-    SettingsPage(),
-    ProfilePage()
-  ];
+  String selectedListId = "";
+
+  void selectNewList(String listId) {
+    setState(() {
+      selectedListId = listId;
+      _currentIndex = 1;
+    });
+  }
 
   void onBottomNavTap(int newIndex) {
     setState(() {
@@ -57,6 +59,13 @@ class _AppContainerState extends State<AppContainer> {
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> body = [
+      HomePage(selectNewList: selectNewList),
+      ListPage(selectedListId: selectedListId),
+      SettingsPage(),
+      ProfilePage()
+    ];
+
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(110),

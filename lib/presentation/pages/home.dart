@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../logic/navigation/navigation_cubit.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key, required this.selectNewList});
-
-  final ValueChanged<String> selectNewList;
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,23 +16,22 @@ class HomePage extends StatelessWidget {
       childAspectRatio: (192.0 / 234.0),
       children: [
         ExpenseListCard(
-            color: 0x883AC828,
-            emoji: '⛰️',
-            title: 'Harz Wernigerode 2024',
-            cost: '€2.340',
-            selectNewList: selectNewList),
+          color: 0x883AC828,
+          emoji: '⛰️',
+          title: 'Harz Wernigerode 2024',
+          cost: '€2.340',
+        ),
         ExpenseListCard(
-            color: 0x88E2D66A,
-            emoji: '🏞️',
-            title: 'Kanuausflug Schweden',
-            cost: '€1.365',
-            selectNewList: selectNewList),
+          color: 0x88E2D66A,
+          emoji: '🏞️',
+          title: 'Kanuausflug Schweden',
+          cost: '€1.365',
+        ),
         ExpenseListCard(
             color: 0x8815376A,
             emoji: '🎿',
             title: 'Skiausflug 2025',
-            cost: '€4.500,20',
-            selectNewList: selectNewList),
+            cost: '€4.500,20'),
       ],
     );
   }
@@ -43,15 +43,16 @@ class ExpenseListCard extends StatelessWidget {
       required this.color,
       required this.emoji,
       required this.title,
-      required this.cost,
-      required this.selectNewList});
+      required this.cost});
 
   final int color;
   final String emoji;
   final String title;
   final String cost;
 
-  final ValueChanged<String> selectNewList;
+  void selectNewList(BuildContext context, String title) {
+    BlocProvider.of<NavigationCubit>(context).setNavBarItem(1);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +60,7 @@ class ExpenseListCard extends StatelessWidget {
       children: [
         Expanded(
           child: GestureDetector(
-            onTap: () => {selectNewList(title)},
+            onTap: () => {selectNewList(context, title)},
             child: Container(
               decoration: BoxDecoration(
                 color: Color(color),

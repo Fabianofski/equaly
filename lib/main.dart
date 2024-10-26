@@ -1,5 +1,6 @@
 import 'package:equaly/CustomBottomNavigationBar.dart';
 import 'package:equaly/CustomAppBar.dart';
+import 'package:equaly/logic/list/expense_list_cubit.dart';
 import 'package:equaly/logic/navigation/constants/nav_bar_items.dart';
 import 'package:equaly/logic/navigation/navigation_cubit.dart';
 import 'package:flutter/material.dart';
@@ -11,16 +12,44 @@ import 'presentation/pages/profile.dart';
 import 'presentation/pages/settings.dart';
 
 void main() {
-  runApp(const App());
+  runApp(App());
 }
 
 class App extends StatelessWidget {
-  const App({super.key});
+  App({super.key});
+
+  final List<ExpenseListState> lists = [
+    ExpenseListState(
+      color: 0x883AC828,
+      emoji: '⛰️',
+      title: 'Harz Wernigerode 2024',
+      totalCost: '€2.340',
+      id: '3456-4563-8762-4567',
+    ),
+    ExpenseListState(
+      color: 0x88E2D66A,
+      emoji: '🏞️',
+      title: 'Kanuausflug Schweden',
+      totalCost: '€1.365',
+      id: '3452-6782-5687-9125',
+    ),
+    ExpenseListState(
+      color: 0x8815376A,
+      emoji: '🎿',
+      title: 'Skiausflug 2025',
+      totalCost: '€4.500,20',
+      id: '9976-3458-9174-7105')
+  ];
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<NavigationCubit>(
-      create: (context) => NavigationCubit(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<NavigationCubit>(
+          create: (context) => NavigationCubit(),
+        ),
+        BlocProvider<ExpenseListCubit>(create: (context) => ExpenseListCubit(lists))
+      ],
       child: MaterialApp(
         title: 'Equaly',
         debugShowCheckedModeBanner: false,
@@ -40,15 +69,13 @@ class App extends StatelessWidget {
 }
 
 class AppContainer extends StatelessWidget {
-  final String selectedListId = "";
-
   const AppContainer({super.key});
 
   @override
   Widget build(BuildContext context) {
     Map<NavbarItem, Widget> body = {
       NavbarItem.home: HomePage(),
-      NavbarItem.list: ListPage(selectedListId: selectedListId),
+      NavbarItem.list: ListPage(),
       NavbarItem.settings: SettingsPage(),
       NavbarItem.profile: ProfilePage()
     };
@@ -60,10 +87,9 @@ class AppContainer extends StatelessWidget {
       ),
       body: BlocBuilder<NavigationCubit, NavigationState>(
           builder: (context, state) {
-          return body[state.navbarItem] ?? Text("404");
+        return body[state.navbarItem] ?? Text("404");
       }),
-      bottomNavigationBar:
-          CustomBottomNavigationBar(),
+      bottomNavigationBar: CustomBottomNavigationBar(),
     );
   }
 }

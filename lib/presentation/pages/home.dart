@@ -12,7 +12,6 @@ class HomePage extends StatelessWidget {
     return BlocBuilder<ExpenseListCubit, List<ExpenseListState>>(builder: (context, state) {
       return GridView.count(
         crossAxisCount: 2,
-        padding: const EdgeInsets.all(16),
         crossAxisSpacing: 16,
         mainAxisSpacing: 16,
         childAspectRatio: (192.0 / 234.0),
@@ -27,9 +26,9 @@ class ExpenseListCard extends StatelessWidget {
 
   final ExpenseListState list;
 
-  void selectNewList(BuildContext context, String id) {
+  void selectNewList(BuildContext context, ExpenseListState state) {
     BlocProvider.of<NavigationCubit>(context).setNavBarItem(1);
-    BlocProvider.of<ExpenseListCubit>(context).selectList(id);
+    BlocProvider.of<SelectedExpenseListCubit>(context).selectNewList(state);
   }
 
   @override
@@ -38,7 +37,7 @@ class ExpenseListCard extends StatelessWidget {
       children: [
         Expanded(
           child: GestureDetector(
-            onTap: () => {selectNewList(context, list.id)},
+            onTap: () => {selectNewList(context, list)},
             child: Container(
               decoration: BoxDecoration(
                 color: Color(list.color),

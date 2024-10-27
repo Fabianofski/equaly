@@ -7,8 +7,7 @@ class ListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ExpenseListCubit, List<ExpenseListState>>(builder: (context, state) {
-      ExpenseListState list = context.read<ExpenseListCubit>().getSelectedList();
+    return BlocBuilder<SelectedExpenseListCubit, ExpenseListState>(builder: (context, list) {
       return Text("List: ${list.title}");
     });
   }

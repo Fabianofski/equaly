@@ -1,3 +1,4 @@
+import 'package:equaly/logic/app_bar/app_bar_cubit.dart';
 import 'package:equaly/presentation/wireframe/bottom_nav.dart';
 import 'package:equaly/presentation/wireframe/app_bar.dart';
 import 'package:equaly/logic/list/expense_list_cubit.dart';
@@ -16,30 +17,7 @@ void main() {
 }
 
 class App extends StatelessWidget {
-  App({super.key});
-
-  final List<ExpenseListState> lists = [
-    ExpenseListState(
-      color: 0x883AC828,
-      emoji: '⛰️',
-      title: 'Harz Wernigerode 2024',
-      totalCost: '€2.340',
-      id: '3456-4563-8762-4567',
-    ),
-    ExpenseListState(
-      color: 0x88E2D66A,
-      emoji: '🏞️',
-      title: 'Kanuausflug Schweden',
-      totalCost: '€1.365',
-      id: '3452-6782-5687-9125',
-    ),
-    ExpenseListState(
-        color: 0x8815376A,
-        emoji: '🎿',
-        title: 'Skiausflug 2025',
-        totalCost: '€4.500,20',
-        id: '9976-3458-9174-7105')
-  ];
+  const App({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -49,9 +27,10 @@ class App extends StatelessWidget {
           create: (context) => NavigationCubit(),
         ),
         BlocProvider<ExpenseListCubit>(
-            create: (context) => ExpenseListCubit(lists)),
-        BlocProvider<SelectedExpenseListCubit>(
-            create: (context) => SelectedExpenseListCubit(lists.first))
+            create: (context) => ExpenseListCubit()),
+        BlocProvider<AppBarCubit>(create: (context) => AppBarCubit()),
+        // BlocProvider<SelectedExpenseListCubit>(
+        //    create: (context) => SelectedExpenseListCubit(null))
       ],
       child: MaterialApp(
         title: 'Equaly',

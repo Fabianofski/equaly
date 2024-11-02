@@ -1,4 +1,6 @@
+import 'package:equaly/logic/app_bar/app_bar_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CustomAppBar extends StatelessWidget {
   const CustomAppBar({super.key});
@@ -21,27 +23,19 @@ class CustomAppBar extends StatelessWidget {
               ),
             ),
             SizedBox(height: 24),
-            RichText(
-              text: TextSpan(
-                style: TextStyle(
-                  fontSize: 24,
-                  color: Colors.black,
-                ),
-                children: [
-                  TextSpan(
-                    text: 'Hi, ',
-                    style: TextStyle(
-                      fontWeight: FontWeight.normal,
-                    ),
-                  ),
-                  TextSpan(
-                    text: 'Fabian! 👋',
+            BlocBuilder<AppBarCubit, String>(
+              builder: (context, state) {
+                return RichText(
+                  text: TextSpan(
+                    text: state,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
+                      fontSize: 24,
+                      color: Colors.black,
                     ),
                   ),
-                ],
-              ),
+                );
+              },
             ),
           ],
         ),

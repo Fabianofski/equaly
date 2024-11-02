@@ -1,3 +1,4 @@
+import 'package:equaly/logic/app_bar/app_bar_cubit.dart';
 import 'package:equaly/logic/list/expense_list_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,6 +10,8 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    BlocProvider.of<AppBarCubit>(context).setTitle('🏡 Home');
+
     return BlocBuilder<ExpenseListCubit, List<ExpenseListState>>(builder: (context, state) {
       return GridView.count(
         crossAxisCount: 2,

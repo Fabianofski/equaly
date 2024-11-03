@@ -29,8 +29,8 @@ class App extends StatelessWidget {
         BlocProvider<ExpenseListCubit>(
             create: (context) => ExpenseListCubit()),
         BlocProvider<AppBarCubit>(create: (context) => AppBarCubit()),
-        // BlocProvider<SelectedExpenseListCubit>(
-        //    create: (context) => SelectedExpenseListCubit(null))
+         BlocProvider<SelectedExpenseListCubit>(
+            create: (context) => SelectedExpenseListCubit(null))
       ],
       child: MaterialApp(
         title: 'Equaly',

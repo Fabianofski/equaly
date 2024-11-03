@@ -12,13 +12,31 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     BlocProvider.of<AppBarCubit>(context).setTitle('🏡 Home');
 
-    return BlocBuilder<ExpenseListCubit, List<ExpenseListState>>(builder: (context, state) {
-      return GridView.count(
-        crossAxisCount: 2,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-        childAspectRatio: (192.0 / 234.0),
-        children: [for (var list in state) ExpenseListCard(list: list)],
+    return BlocBuilder<ExpenseListCubit, List<ExpenseListState>>(
+        builder: (context, state) {
+      return RefreshIndicator(
+        onRefresh:
+            BlocProvider.of<ExpenseListCubit>(context).fetchExpenseListsOfUser,
+        child: Stack(
+          children: [
+            GridView.count(
+              physics: AlwaysScrollableScrollPhysics(),
+              shrinkWrap: true,
+              crossAxisCount: 2,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+              childAspectRatio: (192.0 / 234.0),
+              children: [for (var list in state) ExpenseListCard(list: list)],
+            ),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: FloatingActionButton(
+                onPressed: () => {},
+                child: const Icon(Icons.add),
+              ),
+            )
+          ],
+        ),
       );
     });
   }
@@ -62,10 +80,12 @@ class ExpenseListCard extends StatelessWidget {
           alignment: Alignment.centerLeft,
           child: Text(
             list.title,
+            maxLines: 1,
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 14,
               letterSpacing: -.5,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ),

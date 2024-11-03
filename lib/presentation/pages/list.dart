@@ -8,10 +8,22 @@ class ListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SelectedExpenseListCubit, ExpenseListState>(builder: (context, list) {
-      BlocProvider.of<AppBarCubit>(context).setTitle('${list.emoji} ${list.title}');
-      return Text("List: ${list.title}");
-    });
+    return RefreshIndicator(
+      onRefresh:
+          BlocProvider.of<ExpenseListCubit>(context).fetchExpenseListsOfUser,
+      child: ListView(
+        physics: AlwaysScrollableScrollPhysics(),
+        children: [
+          BlocBuilder<SelectedExpenseListCubit, ExpenseListState?>(
+              builder: (context, list) {
+            if (list == null) return Text("Select a list first");
+
+            BlocProvider.of<AppBarCubit>(context)
+                .setTitle('${list.emoji} ${list.title}');
+            return Text("List: ${list.title}");
+          })
+        ],
+      ),
+    );
   }
 }
-

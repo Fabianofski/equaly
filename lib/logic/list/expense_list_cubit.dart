@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,8 +12,10 @@ class ExpenseListCubit extends Cubit<List<ExpenseListState>> {
     fetchExpenseListsOfUser();
   }
 
-  void fetchExpenseListsOfUser() async {
-    final response = await http.get(Uri.parse('http://10.0.2.2:3000/user-expense-lists'));
+  Future<void> fetchExpenseListsOfUser() async {
+    emit([]);
+    final response = await http.get(Uri.http(
+        '192.168.188.40:3000', '/user-expense-lists', {"userId": "user-001"}));
     if (response.statusCode != 200) {
       return;
     }
@@ -20,14 +23,15 @@ class ExpenseListCubit extends Cubit<List<ExpenseListState>> {
     final jsonData = jsonDecode(utf8.decode(response.bodyBytes));
     List<ExpenseListState> expenseLists = [];
     for (var entry in jsonData) {
-      var expenseList = ExpenseListState.fromJson(entry as Map<String, dynamic>);
+      var expenseList =
+          ExpenseListState.fromJson(entry as Map<String, dynamic>);
       expenseLists.add(expenseList);
     }
     emit(expenseLists);
   }
 }
 
-class SelectedExpenseListCubit extends Cubit<ExpenseListState> {
+class SelectedExpenseListCubit extends Cubit<ExpenseListState?> {
   SelectedExpenseListCubit(super.state);
 
   void selectNewList(ExpenseListState newState) {

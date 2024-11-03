@@ -2,6 +2,7 @@ import 'package:equaly/logic/app_bar/app_bar_cubit.dart';
 import 'package:equaly/logic/list/expense_list_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../logic/navigation/navigation_cubit.dart';
 
@@ -32,7 +33,9 @@ class HomePage extends StatelessWidget {
               alignment: Alignment.bottomRight,
               child: FloatingActionButton(
                 onPressed: () => {},
-                child: const Icon(Icons.add),
+                backgroundColor: Theme.of(context).primaryColor,
+                shape: CircleBorder(),
+                child: const Icon(FontAwesomeIcons.plus, color: Colors.white,),
               ),
             )
           ],

@@ -5,6 +5,7 @@ import 'package:equaly/logic/list/expense_list_cubit.dart';
 import 'package:equaly/logic/navigation/constants/nav_bar_items.dart';
 import 'package:equaly/logic/navigation/navigation_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'presentation/pages/home.dart';
@@ -13,6 +14,12 @@ import 'presentation/pages/profile.dart';
 import 'presentation/pages/settings.dart';
 
 void main() {
+  SystemChrome.setSystemUIOverlayStyle(
+    SystemUiOverlayStyle.light.copyWith(
+      statusBarColor: Color(0xFFE3EBF4),
+      systemNavigationBarColor: Color(0xFFE3EBF4),
+    ),
+  );
   runApp(App());
 }
 
@@ -40,8 +47,12 @@ class App extends StatelessWidget {
           appBarTheme: const AppBarTheme(
             color: Color(0xFFEEF4FC),
           ),
+          navigationBarTheme: NavigationBarThemeData(
+            backgroundColor: Color(0xFFE3EBF4),
+          ),
+          primaryColor: Color(0xFF15376A),
           scaffoldBackgroundColor: const Color(0xFFEEF4FC),
-          canvasColor: const Color(0xFFE3EBF4),
+          canvasColor: Color(0xFFE3EBF4),
           useMaterial3: true,
         ),
         home: const AppContainer(),

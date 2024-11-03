@@ -1,6 +1,7 @@
 import 'package:equaly/logic/navigation/navigation_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
   const CustomBottomNavigationBar({super.key});
@@ -9,27 +10,43 @@ class CustomBottomNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context);
     return BlocBuilder<NavigationCubit, NavigationState>(
       builder: (context, state) {
-        return BottomNavigationBar(
-            onTap: (index) {
-              BlocProvider.of<NavigationCubit>(context).setNavBarItem(index);
-            },
-            currentIndex: state.index,
-            elevation: 0,
-            fixedColor: Colors.black,
-            items: const [
-              BottomNavigationBarItem(
-                  label: "Home", icon: Icon(Icons.home, color: Colors.blue)),
-              BottomNavigationBarItem(
-                  label: "List", icon: Icon(Icons.list, color: Colors.blue)),
-              BottomNavigationBarItem(
+        return SizedBox(
+          height: 80,
+          child: BottomNavigationBar(
+              onTap: (index) {
+                BlocProvider.of<NavigationCubit>(context).setNavBarItem(index);
+              },
+              type: BottomNavigationBarType.fixed,
+              showUnselectedLabels: false,
+              showSelectedLabels: true,
+              currentIndex: state.index,
+              selectedItemColor: theme.primaryColor,
+              unselectedItemColor: theme.primaryColor.withOpacity(0.5),
+              iconSize: 26,
+              selectedIconTheme: IconThemeData(
+                size: 30
+              ),
+              elevation: 0,
+              items: [
+                BottomNavigationBarItem(
+                    label: "Home", icon: Icon(FontAwesomeIcons.house)),
+                BottomNavigationBarItem(
+                  label: "List",
+                  icon: Icon(FontAwesomeIcons.fileInvoice)
+                ),
+                BottomNavigationBarItem(
                   label: "Settings",
-                  icon: Icon(Icons.settings, color: Colors.blue)),
-              BottomNavigationBarItem(
+                  icon: Icon(FontAwesomeIcons.gear)
+                ),
+                BottomNavigationBarItem(
                   label: "Profile",
-                  icon: Icon(Icons.person, color: Colors.blue)),
-            ]);
+                  icon: Icon(FontAwesomeIcons.solidUser),
+                ),
+              ]),
+        );
       },
     );
   }

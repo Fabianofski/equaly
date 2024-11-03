@@ -94,7 +94,7 @@ class ExpenseListCard extends StatelessWidget {
         ),
         Align(
           alignment: Alignment.centerLeft,
-          child: Text(list.totalCost),
+          child: Text("${list.currency}${list.totalCost.toStringAsFixed(2)}"),
         ),
       ],
     );

@@ -20,7 +20,7 @@ class ListPage extends StatelessWidget {
 
             BlocProvider.of<AppBarCubit>(context)
                 .setTitle('${list.emoji} ${list.title}');
-            return Text("List: ${list.title}");
+            return Text("List: ${list.title}, Amount: ${list.expenses.length}");
           })
         ],
       ),

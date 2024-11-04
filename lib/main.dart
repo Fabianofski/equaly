@@ -51,6 +51,16 @@ class App extends StatelessWidget {
             backgroundColor: Color(0xFFE3EBF4),
           ),
           primaryColor: Color(0xFF15376A),
+          textTheme: TextTheme(
+            titleSmall: TextStyle(
+              fontWeight: FontWeight.w900,
+            ),
+            bodySmall: TextStyle(
+              fontWeight: FontWeight.w100,
+              fontSize: 14,
+              color: Color(0x88060F1E)
+            )
+          ),
           scaffoldBackgroundColor: const Color(0xFFEEF4FC),
           canvasColor: Color(0xFFE3EBF4),
           useMaterial3: true,

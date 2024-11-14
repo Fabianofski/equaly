@@ -52,6 +52,10 @@ class App extends StatelessWidget {
           ),
           primaryColor: Color(0xFF15376A),
           textTheme: TextTheme(
+            titleMedium: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 24,
+            ),
             titleSmall: TextStyle(
               fontWeight: FontWeight.w900,
             ),
@@ -59,6 +63,64 @@ class App extends StatelessWidget {
               fontWeight: FontWeight.w100,
               fontSize: 14,
               color: Color(0x88060F1E)
+            ),
+            labelLarge: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+              color: Colors.white,
+            ),
+            labelMedium: TextStyle(
+              fontSize: 16,
+            ),
+            labelSmall: TextStyle(
+              fontSize: 14,
+            )
+          ),
+          filledButtonTheme: FilledButtonThemeData(
+            style: ButtonStyle(
+              fixedSize: WidgetStatePropertyAll(
+                Size.fromHeight(50)
+              ),
+              shape: WidgetStatePropertyAll(
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+              ),
+              backgroundColor: WidgetStatePropertyAll(
+                Color(0xFF15376A)
+              )
+            )
+          ),
+          inputDecorationTheme: InputDecorationTheme(
+            filled: true,
+            floatingLabelBehavior: FloatingLabelBehavior.always,
+            fillColor: Color(0xFFE9F0F7),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: BorderSide(
+                color: Colors.grey,
+                width: 1.0,
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: BorderSide(
+                color: Colors.grey,
+                width: 1.0,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: BorderSide(
+                color: Colors.blue,
+                width: 1.5,
+              ),
+            ),
+            hintStyle: TextStyle(
+              color: Colors.grey,
+              fontWeight: FontWeight.normal,
+              fontSize: 14,
+            ),
+            labelStyle: TextStyle(
+              fontSize: 14,
             )
           ),
           scaffoldBackgroundColor: const Color(0xFFEEF4FC),

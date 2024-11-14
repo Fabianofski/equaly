@@ -7,6 +7,8 @@ class CustomAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+
     return AppBar(
       elevation: 0,
       toolbarHeight: 110,
@@ -28,11 +30,7 @@ class CustomAppBar extends StatelessWidget {
                 return RichText(
                   text: TextSpan(
                     text: state,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24,
-                      color: Colors.black,
-                    ),
+                    style: theme.textTheme.titleMedium
                   ),
                 );
               },

@@ -15,7 +15,7 @@ class ExpenseListCubit extends Cubit<List<ExpenseListState>> {
   Future<void> fetchExpenseListsOfUser() async {
     emit([]);
     final response = await http.get(Uri.http(
-        '192.168.188.40:3000', '/user-expense-lists', {"userId": "user-001"}));
+        '192.168.188.40:3000', '/v1/expense-lists', {"userId": "user-001"}));
     if (response.statusCode != 200) {
       return;
     }

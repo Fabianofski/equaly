@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../logic/navigation/navigation_cubit.dart';
+import 'new-list.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -32,7 +33,9 @@ class HomePage extends StatelessWidget {
             Align(
               alignment: Alignment.bottomRight,
               child: FloatingActionButton(
-                onPressed: () => {},
+                onPressed: () => {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => NewListPage()))
+                },
                 backgroundColor: Theme.of(context).primaryColor,
                 shape: CircleBorder(),
                 child: const Icon(FontAwesomeIcons.plus, color: Colors.white,),

@@ -8,10 +8,12 @@ class ExpenseListState extends Equatable {
   final int color;
   final List<Expense> expenses;
   final String currency;
+  final String creatorId;
 
   const ExpenseListState(
       {required this.id,
       required this.title,
+      required this.creatorId,
       required this.totalCost,
       required this.emoji,
       required this.color,
@@ -21,6 +23,17 @@ class ExpenseListState extends Equatable {
   @override
   List<Object?> get props => [title, totalCost, emoji];
 
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'color': color.toString(),
+        'emoji': emoji,
+        'title': title,
+        'totalCost': totalCost,
+        'creatorId': creatorId,
+        'currency': currency,
+        'expenses': expenses.map((e) => e.toJson()).toList(),
+      };
+
   factory ExpenseListState.fromJson(Map<String, dynamic> json) {
     return switch (json) {
       {
@@ -29,12 +42,14 @@ class ExpenseListState extends Equatable {
         'emoji': String emoji,
         'title': String title,
         'totalCost': num totalCost,
+        'creatorId': String creatorId,
         'currency': String currency,
         'expenses': List<dynamic> expenses
       } =>
         ExpenseListState(
             id: id,
             color: int.parse(color),
+            creatorId: creatorId,
             emoji: emoji,
             title: title,
             totalCost: totalCost,
@@ -58,6 +73,14 @@ class Expense {
     required this.description,
     required this.participants,
   });
+
+  Map<String, dynamic> toJson() => {
+
+    'buyer': buyer,
+    'amount': amount,
+    'description': description,
+    'participants': participants,
+  };
 
   factory Expense.fromJson(Map<String, dynamic> json) {
     return switch (json) {

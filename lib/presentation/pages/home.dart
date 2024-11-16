@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../logic/navigation/navigation_cubit.dart';
-import 'new-list.dart';
+import 'new_list.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});

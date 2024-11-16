@@ -1,5 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:equaly/presentation/pages/new_participant.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'package:equaly/logic/list/expense_list_cubit.dart';
 import 'package:equaly/logic/list/participant_state.dart';
@@ -26,83 +29,6 @@ class _NewListPageState extends State<NewListPage> {
 
     return HSVColor.fromAHSV(1.0, hue.toDouble(), saturation, brightness)
         .toColor();
-  }
-
-  void showParticipantModal() {
-    var theme = Theme.of(context);
-    var participantName = TextEditingController();
-    File? _profileImage;
-
-    showModalBottomSheet(
-        context: context,
-        showDragHandle: true,
-        builder: (BuildContext context) {
-          return Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-
-                      },
-                      child: Center(
-                        child: CircleAvatar(
-                          radius: 72,
-                          backgroundImage: _profileImage != null
-                              ? FileImage(_profileImage!)
-                              : null,
-                          backgroundColor: Colors.grey[300],
-                          child: _profileImage == null
-                              ? Icon(
-                                  Icons.camera_alt,
-                                  size: 50,
-                                  color: Colors.grey[700],
-                                )
-                              : null,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    Text(
-                      "Teilnehmer Name",
-                      style: theme.textTheme.labelMedium,
-                    ),
-                    SizedBox(height: 4),
-                    TextField(
-                      controller: participantName,
-                      decoration: InputDecoration(
-                        hintText: "Name",
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                    width: double.infinity,
-                    child: FilledButton(
-                      onPressed: () {
-                        if (participantName.text.isEmpty) return;
-                        setState(() {
-                          participants.add(ParticipantState(
-                              avatarUrl: "",
-                              name: participantName.text,
-                              id: ""));
-                        });
-                        Navigator.pop(context);
-                      },
-                      style: theme.filledButtonTheme.style,
-                      child: Text(
-                        "Teilnehmer hinzufügen",
-                        style: theme.textTheme.labelLarge,
-                      ),
-                    ))
-              ],
-            ),
-          );
-        });
   }
 
   Future<void> createExpenseList(String title, Color color, String currency,
@@ -258,13 +184,40 @@ class _NewListPageState extends State<NewListPage> {
                 ),
                 if (participants.isEmpty) SizedBox(height: 4),
                 for (var participant in participants)
-                  ListTile(
-                    leading: Icon(Icons.person),
-                    title: Text(participant.name),
+                  Dismissible(
+                    key: Key(participant.id),
+                    direction: DismissDirection.endToStart,
+                    onDismissed: (direction) {
+                      setState(() {
+                        participants.removeWhere((p) => p.id == participant.id);
+                      });
+                    },
+                    background: Container(
+                      color: Colors.redAccent,
+                      child: Align(alignment: Alignment(0.9, 0), child: Icon(FontAwesomeIcons.trash, color: theme.canvasColor,)),
+                    ),
+                    child: ListTile(
+                      onTap: () {},
+                      leading: participant.avatarUrl != ""
+                          ? CircleAvatar(
+                              backgroundImage:
+                                  FileImage(File(participant.avatarUrl)))
+                          : Icon(Icons.person),
+                      title: Text(participant.name),
+                    ),
                   ),
                 FilledButton(
                   onPressed: () {
-                    showParticipantModal();
+                    showModalBottomSheet(
+                        context: context,
+                        showDragHandle: true,
+                        builder: (BuildContext context) {
+                          return NewParticipant(addParticipant: (p) {
+                            setState(() {
+                              participants.add(p);
+                            });
+                          });
+                        });
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.transparent,

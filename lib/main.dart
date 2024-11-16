@@ -50,6 +50,9 @@ class App extends StatelessWidget {
           navigationBarTheme: NavigationBarThemeData(
             backgroundColor: Color(0xFFE3EBF4),
           ),
+          bottomSheetTheme: BottomSheetThemeData(
+            backgroundColor: Color(0xFFEEF4FC),
+          ),
           primaryColor: Color(0xFF15376A),
           textTheme: TextTheme(
             titleMedium: TextStyle(
@@ -91,7 +94,6 @@ class App extends StatelessWidget {
           ),
           inputDecorationTheme: InputDecorationTheme(
             filled: true,
-            floatingLabelBehavior: FloatingLabelBehavior.always,
             fillColor: Color(0xFFE9F0F7),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.0),

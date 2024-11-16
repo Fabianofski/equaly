@@ -6,19 +6,22 @@ class ExpenseListState extends Equatable {
   final num totalCost;
   final String emoji;
   final int color;
-  final List<Expense> expenses;
+  final List<ExpenseState> expenses;
   final String currency;
   final String creatorId;
+  final List<ParticipantState> participants;
 
-  const ExpenseListState(
-      {required this.id,
-      required this.title,
-      required this.creatorId,
-      required this.totalCost,
-      required this.emoji,
-      required this.color,
-      required this.expenses,
-      required this.currency});
+  const ExpenseListState({
+    required this.id,
+    required this.title,
+    required this.creatorId,
+    required this.totalCost,
+    required this.emoji,
+    required this.color,
+    required this.expenses,
+    required this.currency,
+    required this.participants,
+  });
 
   @override
   List<Object?> get props => [title, totalCost, emoji];
@@ -32,6 +35,7 @@ class ExpenseListState extends Equatable {
         'creatorId': creatorId,
         'currency': currency,
         'expenses': expenses.map((e) => e.toJson()).toList(),
+        'participants': participants.map((p) => p.toJson()).toList(),
       };
 
   factory ExpenseListState.fromJson(Map<String, dynamic> json) {
@@ -44,58 +48,23 @@ class ExpenseListState extends Equatable {
         'totalCost': num totalCost,
         'creatorId': String creatorId,
         'currency': String currency,
-        'expenses': List<dynamic> expenses
+        'expenses': List<dynamic> expenses,
+        'participants': List<dynamic> participants
       } =>
         ExpenseListState(
-            id: id,
-            color: int.parse(color),
-            creatorId: creatorId,
-            emoji: emoji,
-            title: title,
-            totalCost: totalCost,
-            currency: currency,
-            expenses: List<Expense>.from(
-                expenses.map((item) => Expense.fromJson(item)))),
-      _ => throw const FormatException("Failed to load Expense List"),
-    };
-  }
-}
-
-class Expense {
-  final String buyer;
-  final num amount;
-  final String description;
-  final List<String> participants;
-
-  const Expense({
-    required this.buyer,
-    required this.amount,
-    required this.description,
-    required this.participants,
-  });
-
-  Map<String, dynamic> toJson() => {
-
-    'buyer': buyer,
-    'amount': amount,
-    'description': description,
-    'participants': participants,
-  };
-
-  factory Expense.fromJson(Map<String, dynamic> json) {
-    return switch (json) {
-      {
-        'buyer': String buyer,
-        'amount': num amount,
-        'description': String description,
-        'participants': String participants,
-      } =>
-        Expense(
-            buyer: buyer,
-            amount: amount,
-            description: description,
-            participants: participants.split(',')),
-      _ => throw const FormatException("Failed to load Expense List"),
+          id: id,
+          color: int.parse(color),
+          creatorId: creatorId,
+          emoji: emoji,
+          title: title,
+          totalCost: totalCost,
+          currency: currency,
+          expenses: List<ExpenseState>.from(
+              expenses.map((item) => ExpenseState.fromJson(item))),
+          participants: List<ParticipantState>.from(
+              participants.map((item) => ParticipantState.fromJson(item))),
+        ),
+      _ => throw const FormatException("Failed to load Expense List from Json"),
     };
   }
 }

@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:equaly/logic/list/expense_list_cubit.dart';
+import 'package:equaly/logic/list/participant_state.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -14,6 +16,8 @@ class NewListPage extends StatefulWidget {
 class _NewListPageState extends State<NewListPage> {
   var listTitle = TextEditingController();
   var selectedColor = generateColor(0);
+  var participants = <ParticipantState>[];
+  var currency = "EUR";
 
   static Color generateColor(int index) {
     final hue = (index * 18) % 360;
@@ -24,8 +28,85 @@ class _NewListPageState extends State<NewListPage> {
         .toColor();
   }
 
-  Future<void> createExpenseList(
-      String title, Color color, String currency) async {
+  void showParticipantModal() {
+    var theme = Theme.of(context);
+    var participantName = TextEditingController();
+    File? _profileImage;
+
+    showModalBottomSheet(
+        context: context,
+        showDragHandle: true,
+        builder: (BuildContext context) {
+          return Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+
+                      },
+                      child: Center(
+                        child: CircleAvatar(
+                          radius: 72,
+                          backgroundImage: _profileImage != null
+                              ? FileImage(_profileImage!)
+                              : null,
+                          backgroundColor: Colors.grey[300],
+                          child: _profileImage == null
+                              ? Icon(
+                                  Icons.camera_alt,
+                                  size: 50,
+                                  color: Colors.grey[700],
+                                )
+                              : null,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      "Teilnehmer Name",
+                      style: theme.textTheme.labelMedium,
+                    ),
+                    SizedBox(height: 4),
+                    TextField(
+                      controller: participantName,
+                      decoration: InputDecoration(
+                        hintText: "Name",
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      onPressed: () {
+                        if (participantName.text.isEmpty) return;
+                        setState(() {
+                          participants.add(ParticipantState(
+                              avatarUrl: "",
+                              name: participantName.text,
+                              id: ""));
+                        });
+                        Navigator.pop(context);
+                      },
+                      style: theme.filledButtonTheme.style,
+                      child: Text(
+                        "Teilnehmer hinzufügen",
+                        style: theme.textTheme.labelLarge,
+                      ),
+                    ))
+              ],
+            ),
+          );
+        });
+  }
+
+  Future<void> createExpenseList(String title, Color color, String currency,
+      List<ParticipantState> participants) async {
     var expenseList = ExpenseListState(
       id: "",
       title: title,
@@ -35,6 +116,7 @@ class _NewListPageState extends State<NewListPage> {
       color: color.value,
       expenses: [],
       currency: currency,
+      participants: participants,
     );
 
     var jsonEncoded = jsonEncode(expenseList.toJson());
@@ -44,6 +126,13 @@ class _NewListPageState extends State<NewListPage> {
         body: jsonEncoded);
 
     if (response.statusCode != 200) {
+      final scaffold = ScaffoldMessenger.of(context);
+      scaffold.showSnackBar(
+        SnackBar(
+          content: Text("${response.statusCode} ${response.body}"),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
       return;
     }
 
@@ -71,16 +160,25 @@ class _NewListPageState extends State<NewListPage> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Text(
+                  "Listentitel",
+                  style: theme.textTheme.labelMedium,
+                ),
+                SizedBox(height: 4),
                 TextField(
                   controller: listTitle,
                   decoration: InputDecoration(
-                    labelText: 'Listentitel',
                     hintText: "Titel",
                   ),
                 ),
                 SizedBox(height: 16),
+                Text(
+                  "Hauptwährung",
+                  style: theme.textTheme.labelMedium,
+                ),
+                SizedBox(height: 4),
                 DropdownButtonFormField<String>(
-                  value: 'EUR',
+                  value: currency,
                   items: [
                     DropdownMenuItem(
                         value: 'EUR',
@@ -115,11 +213,16 @@ class _NewListPageState extends State<NewListPage> {
                           ],
                         )),
                   ],
-                  onChanged: (value) {},
-                  decoration: InputDecoration(labelText: 'Hauptwährung'),
+                  onChanged: (value) {
+                    currency = value!;
+                  },
                 ),
                 SizedBox(height: 16),
-                Text('Cover Farbe'),
+                Text(
+                  'Cover Farbe',
+                  style: theme.textTheme.labelMedium,
+                ),
+                SizedBox(height: 4),
                 Wrap(
                   // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   spacing: 8,
@@ -149,22 +252,45 @@ class _NewListPageState extends State<NewListPage> {
                   }),
                 ),
                 SizedBox(height: 16),
-                Text('Teilnehmer'),
-                ListTile(
-                  leading: Icon(Icons.person),
-                  title: Text('Wilhelm'),
+                Text(
+                  'Teilnehmer',
+                  style: theme.textTheme.labelMedium,
                 ),
-                ListTile(
-                  leading: Icon(Icons.person),
-                  title: Text('Tanisha'),
-                ),
-                ListTile(
-                  leading: Icon(Icons.person),
-                  title: Text('Margot'),
-                ),
-                ElevatedButton(
-                  onPressed: () {},
-                  child: Text('Teilnehmer hinzufügen'),
+                if (participants.isEmpty) SizedBox(height: 4),
+                for (var participant in participants)
+                  ListTile(
+                    leading: Icon(Icons.person),
+                    title: Text(participant.name),
+                  ),
+                FilledButton(
+                  onPressed: () {
+                    showParticipantModal();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    padding: EdgeInsets.zero,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                            color: theme.primaryColor, shape: BoxShape.circle),
+                        child: Icon(
+                          Icons.add,
+                          size: 24,
+                          color: Colors.white,
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      Text(
+                        'Teilnehmer hinzufügen',
+                        style: theme.textTheme.bodyLarge,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -172,7 +298,8 @@ class _NewListPageState extends State<NewListPage> {
                 width: double.infinity,
                 child: FilledButton(
                   onPressed: () {
-                    createExpenseList(listTitle.text, selectedColor, "\$");
+                    createExpenseList(
+                        listTitle.text, selectedColor, currency, participants);
                   },
                   style: theme.filledButtonTheme.style,
                   child: Text(

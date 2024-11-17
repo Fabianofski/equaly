@@ -34,67 +34,71 @@ class _NewParticipantState extends State<NewParticipant> {
     var theme = Theme.of(context);
 
     return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GestureDetector(
-                onTap: pickImage,
-                child: Center(
-                  child: CircleAvatar(
-                    radius: 72,
-                    backgroundImage:
-                        profileImage != null ? FileImage(profileImage!) : null,
-                    backgroundColor: Colors.grey[300],
-                    child: profileImage == null
-                        ? Icon(
-                            Icons.camera_alt,
-                            size: 50,
-                            color: Colors.grey[700],
-                          )
-                        : null,
+      padding:
+          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            GestureDetector(
+              onTap: pickImage,
+              child: Center(
+                child: CircleAvatar(
+                  radius: 72,
+                  backgroundImage:
+                      profileImage != null ? FileImage(profileImage!) : null,
+                  backgroundColor: Colors.grey[300],
+                  child: profileImage == null
+                      ? Icon(
+                          Icons.camera_alt,
+                          size: 50,
+                          color: Colors.grey[700],
+                        )
+                      : null,
+                ),
+              ),
+            ),
+            SizedBox(height: 16),
+            Text(
+              "Teilnehmer Name",
+              style: theme.textTheme.labelMedium,
+            ),
+            SizedBox(height: 4),
+            TextField(
+              controller: participantName,
+              decoration: InputDecoration(
+                hintText: "Name",
+              ),
+            ),
+            SizedBox(
+              height: 96,
+            ),
+            SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: () {
+                    if (participantName.text.isEmpty) return;
+                    var uuid = Uuid();
+                    setState(() {
+                      var participant = ParticipantState(
+                          avatarUrl: profileImage?.path ?? "",
+                          name: participantName.text,
+                          id: uuid.v4());
+                      widget.addParticipant(participant);
+                    });
+                    Navigator.pop(context);
+                  },
+                  style: theme.filledButtonTheme.style,
+                  child: Text(
+                    "Teilnehmer hinzufügen",
+                    style: theme.textTheme.labelLarge,
                   ),
-                ),
-              ),
-              SizedBox(height: 16),
-              Text(
-                "Teilnehmer Name",
-                style: theme.textTheme.labelMedium,
-              ),
-              SizedBox(height: 4),
-              TextField(
-                controller: participantName,
-                decoration: InputDecoration(
-                  hintText: "Name",
-                ),
-              ),
-            ],
-          ),
-          SizedBox(
-              width: double.infinity,
-              child: FilledButton(
-                onPressed: () {
-                  if (participantName.text.isEmpty) return;
-                  var uuid = Uuid();
-                  setState(() {
-                    var participant = ParticipantState(
-                        avatarUrl: profileImage?.path ?? "",
-                        name: participantName.text,
-                        id: uuid.v4());
-                    widget.addParticipant(participant);
-                  });
-                  Navigator.pop(context);
-                },
-                style: theme.filledButtonTheme.style,
-                child: Text(
-                  "Teilnehmer hinzufügen",
-                  style: theme.textTheme.labelLarge,
-                ),
-              ))
-        ],
+                ))
+          ],
+        ),
       ),
     );
   }

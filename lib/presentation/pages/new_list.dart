@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:equaly/presentation/pages/new_participant.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:image_picker/image_picker.dart';
 
 import 'package:equaly/logic/list/expense_list_cubit.dart';
 import 'package:equaly/logic/list/participant_state.dart';
@@ -31,14 +30,14 @@ class _NewListPageState extends State<NewListPage> {
         .toColor();
   }
 
-  Future<void> createExpenseList(String title, Color color, String currency,
-      List<ParticipantState> participants) async {
+  Future<void> createExpenseList(String title, Color color, String emoji,
+      String currency, List<ParticipantState> participants) async {
     var expenseList = ExpenseListState(
       id: "",
       title: title,
       totalCost: 0,
       creatorId: "user-001",
-      emoji: "🔧",
+      emoji: emoji,
       color: color.value,
       expenses: [],
       currency: currency,
@@ -194,7 +193,12 @@ class _NewListPageState extends State<NewListPage> {
                     },
                     background: Container(
                       color: Colors.redAccent,
-                      child: Align(alignment: Alignment(0.9, 0), child: Icon(FontAwesomeIcons.trash, color: theme.canvasColor,)),
+                      child: Align(
+                          alignment: Alignment(0.9, 0),
+                          child: Icon(
+                            FontAwesomeIcons.trash,
+                            color: theme.canvasColor,
+                          )),
                     ),
                     child: ListTile(
                       onTap: () {},
@@ -202,7 +206,10 @@ class _NewListPageState extends State<NewListPage> {
                           ? CircleAvatar(
                               backgroundImage:
                                   FileImage(File(participant.avatarUrl)))
-                          : Icon(Icons.person),
+                          : CircleAvatar(
+                              backgroundColor: theme.canvasColor,
+                              child: Icon(Icons.person, size: 28,),
+                            ),
                       title: Text(participant.name),
                     ),
                   ),
@@ -210,6 +217,7 @@ class _NewListPageState extends State<NewListPage> {
                   onPressed: () {
                     showModalBottomSheet(
                         context: context,
+                        isScrollControlled: true,
                         showDragHandle: true,
                         builder: (BuildContext context) {
                           return NewParticipant(addParticipant: (p) {
@@ -251,8 +259,8 @@ class _NewListPageState extends State<NewListPage> {
                 width: double.infinity,
                 child: FilledButton(
                   onPressed: () {
-                    createExpenseList(
-                        listTitle.text, selectedColor, currency, participants);
+                    createExpenseList(listTitle.text, selectedColor, "🔧",
+                        currency, participants);
                   },
                   style: theme.filledButtonTheme.style,
                   child: Text(

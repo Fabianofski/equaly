@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:equaly/presentation/pages/new_participant.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -20,6 +21,8 @@ class _NewListPageState extends State<NewListPage> {
   var selectedColor = generateColor(0);
   var participants = <ParticipantState>[];
   var currency = "EUR";
+  var emojiPickerVisible = false;
+  String? selectedEmoji;
 
   static Color generateColor(int index) {
     final hue = (index * 18) % 360;
@@ -78,9 +81,7 @@ class _NewListPageState extends State<NewListPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Stack(
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,11 +91,30 @@ class _NewListPageState extends State<NewListPage> {
                   style: theme.textTheme.labelMedium,
                 ),
                 SizedBox(height: 4),
-                TextField(
-                  controller: listTitle,
-                  decoration: InputDecoration(
-                    hintText: "Titel",
-                  ),
+                Row(
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        setState(() {
+                          emojiPickerVisible = !emojiPickerVisible;
+                        });
+                      },
+                      icon: selectedEmoji != null
+                          ? Text(
+                              selectedEmoji!,
+                              style: TextStyle(fontSize: 28),
+                            )
+                          : Icon(FontAwesomeIcons.faceSmile),
+                    ),
+                    Expanded(
+                      child: TextField(
+                        controller: listTitle,
+                        decoration: InputDecoration(
+                          hintText: "Titel",
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 SizedBox(height: 16),
                 Text(
@@ -208,7 +228,10 @@ class _NewListPageState extends State<NewListPage> {
                                   FileImage(File(participant.avatarUrl)))
                           : CircleAvatar(
                               backgroundColor: theme.canvasColor,
-                              child: Icon(Icons.person, size: 28,),
+                              child: Icon(
+                                Icons.person,
+                                size: 28,
+                              ),
                             ),
                       title: Text(participant.name),
                     ),
@@ -255,19 +278,46 @@ class _NewListPageState extends State<NewListPage> {
                 ),
               ],
             ),
-            SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: () {
-                    createExpenseList(listTitle.text, selectedColor, "🔧",
-                        currency, participants);
+            if (emojiPickerVisible)
+              Align(
+                alignment: Alignment(0, -0.7),
+                child: EmojiPicker(
+                  onEmojiSelected: (_, Emoji emoji) {
+                    setState(() {
+                      emojiPickerVisible = false;
+                      selectedEmoji = emoji.emoji;
+                    });
                   },
-                  style: theme.filledButtonTheme.style,
-                  child: Text(
-                    "Erstellen",
-                    style: theme.textTheme.labelLarge,
+                  config: Config(
+                    height: 256,
+                    checkPlatformCompatibility: true,
+                    categoryViewConfig: CategoryViewConfig(
+                      recentTabBehavior: RecentTabBehavior.NONE,
+                    ),
+                    bottomActionBarConfig: const BottomActionBarConfig(
+                      showSearchViewButton: false,
+                      showBackspaceButton: false,
+                    ),
                   ),
-                ))
+                ),
+              ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: () {
+                      if (selectedEmoji == null || listTitle.text == "") return;
+                      createExpenseList(listTitle.text, selectedColor, selectedEmoji!,
+                          currency, participants);
+                    },
+                    style: theme.filledButtonTheme.style,
+                    child: Text(
+                      "Erstellen",
+                      style: theme.textTheme.labelLarge,
+                    ),
+                  )),
+            )
           ],
         ),
       ),

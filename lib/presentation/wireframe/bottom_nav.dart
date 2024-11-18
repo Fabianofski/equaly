@@ -1,3 +1,4 @@
+import 'package:equaly/logic/list/expense_list_cubit.dart';
 import 'package:equaly/logic/navigation/navigation_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -5,8 +6,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
   const CustomBottomNavigationBar({super.key});
-
-  void onBottomNavTapped(index) {}
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +16,9 @@ class CustomBottomNavigationBar extends StatelessWidget {
           height: 80,
           child: BottomNavigationBar(
               onTap: (index) {
+                if (index == 1 && BlocProvider.of<SelectedExpenseListCubit>(context).state == null) {
+                  return;
+                }
                 BlocProvider.of<NavigationCubit>(context).setNavBarItem(index);
               },
               type: BottomNavigationBarType.fixed,

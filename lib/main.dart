@@ -78,6 +78,9 @@ class App extends StatelessWidget {
             labelSmall: TextStyle(
               fontSize: 14,
             )
+          ).apply(
+            displayColor: Color(0xFF060F1E),
+            bodyColor: Color(0xFF060F1E),
           ),
           filledButtonTheme: FilledButtonThemeData(
             style: ButtonStyle(

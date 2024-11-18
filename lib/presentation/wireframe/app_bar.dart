@@ -28,9 +28,10 @@ class CustomAppBar extends StatelessWidget {
             BlocBuilder<AppBarCubit, String>(
               builder: (context, state) {
                 return RichText(
+                  maxLines: 1,
                   text: TextSpan(
                     text: state,
-                    style: theme.textTheme.titleMedium
+                    style: theme.textTheme.titleMedium,
                   ),
                 );
               },

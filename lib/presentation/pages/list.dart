@@ -1,8 +1,11 @@
 import 'package:equaly/logic/app_bar/app_bar_cubit.dart';
 import 'package:equaly/logic/list/expense_list_cubit.dart';
+import 'package:equaly/presentation/components/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:collection/collection.dart';
+import 'package:intl/intl.dart';
 
 class ListPage extends StatelessWidget {
   const ListPage({super.key});
@@ -54,63 +57,90 @@ class ExpenseList extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text("AUSGABEN", style: theme.textTheme.titleSmall),
-        Table(
-          border: TableBorder.symmetric(),
-          columnWidths: {
-            0: FlexColumnWidth(),
-            1: FixedColumnWidth(80),
-            2: FixedColumnWidth(130),
-            3: FlexColumnWidth()
-          },
-
-          children: [
-            TableRow(children: [
-              TableCell(
-                  child: Padding(
-                padding: const EdgeInsets.only(right: 8.0, bottom: 4.0),
-                child: Text("KÄUFER", style: theme.textTheme.titleSmall),
-              )),
-              TableCell(
-                  child: Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: Text("BETRAG", style: theme.textTheme.titleSmall),
-              )),
-              TableCell(
-                  child: Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: Text(
-                  "BESCHREIBUNG",
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  maxLines: 1,
-                ),
-              )),
-              TableCell(
-                child: Text("TEILNEHMER", style: theme.textTheme.titleSmall),
-              ),
-            ]),
-            for (var expense in list.expenses)
-              TableRow(children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: TableCell(child: Text(expense.buyer)),
-                ),
-                TableCell(
-                    child: Text(
-                  "${list.currency}${expense.amount.toStringAsFixed(2)}",
+        SizedBox(
+          height: 8,
+        ),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: DataTable(
+            horizontalMargin: 15,
+            columnSpacing: 20,
+            headingRowHeight: 40,
+            dataRowMaxHeight: 50,
+            dataRowMinHeight: 50,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(5),
+              border: Border.all(color: Color(0x8815376A)),
+            ),
+            columns: [
+              DataColumn(
+                label: Text(
+                  "KÄUFER",
                   style: theme.textTheme.titleSmall,
-                )),
-                TableCell(
-                    child: Text(expense.description,
-                        style: TextStyle(overflow: TextOverflow.ellipsis))),
-                TableCell(
-                    child: Text(
-                  expense.participants.join(','),
-                  style: TextStyle(overflow: TextOverflow.ellipsis),
-                )),
-              ]),
-          ],
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  "BETRAG",
+                  style: theme.textTheme.titleSmall,
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  "BESCHREIBUNG",
+                  style: theme.textTheme.titleSmall,
+                ),
+              ),
+              DataColumn(
+                label: Text(
+                  "TEILNEHMER",
+                  style: theme.textTheme.titleSmall,
+                ),
+              ),
+            ],
+            rows: [
+              for (var expense in list.expenses)
+                DataRow(
+                  cells: [
+                    DataCell(
+                      SizedBox(
+                        width: 120,
+                        child: Builder(
+                          builder: (context) {
+                            var participant = list.participants
+                                .firstWhereOrNull((x) => x.id == expense.buyer);
+                            return UserProfile(
+                              avatarUrl: participant?.avatarUrl,
+                              name: participant?.name ?? "Name",
+                              subtitle: DateFormat('dd.MM.yyyy').format(expense.date),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                    DataCell(Text(
+                      "${list.currency}${expense.amount.toStringAsFixed(2)}",
+                      style: theme.textTheme.titleSmall,
+                    )),
+                    DataCell(Text(
+                      expense.description,
+                      style: TextStyle(overflow: TextOverflow.ellipsis),
+                    )),
+                    DataCell(
+                      Row(
+                        children: [
+                          for (var pid in expense.participants)
+                            UserProfile(avatarUrl: list.participants.firstWhereOrNull((p) => p.id == pid)?.avatarUrl,)
+                        ],
+                      ),
+                        ),
+                  ],
+                ),
+            ],
+          ),
+        ),
+        SizedBox(
+          height: 10,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -138,7 +168,13 @@ class ExpenseList extends StatelessWidget {
             )
           ],
         ),
+        SizedBox(
+          height: 16,
+        ),
         Text("ANTEILE", style: theme.textTheme.titleSmall),
+        SizedBox(
+          height: 16,
+        ),
         Text("VORGESCHLAGENER AUSGLEICH", style: theme.textTheme.titleSmall),
       ],
     );

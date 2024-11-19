@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:equaly/logic/app_bar/app_bar_cubit.dart';
+import 'package:equaly/logic/currency_mapper.dart';
 import 'package:equaly/logic/list/expense_list_cubit.dart';
 import 'package:equaly/presentation/components/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -74,27 +77,39 @@ class ExpenseList extends StatelessWidget {
             ),
             columns: [
               DataColumn(
-                label: Text(
-                  "KÄUFER",
-                  style: theme.textTheme.titleSmall,
+                label: SizedBox(
+                  width: 120,
+                  child: Text(
+                    "KÄUFER",
+                    style: theme.textTheme.titleSmall,
+                  ),
                 ),
               ),
               DataColumn(
-                label: Text(
-                  "BETRAG",
-                  style: theme.textTheme.titleSmall,
+                label: SizedBox(
+                  width: 64,
+                  child: Text(
+                    "BETRAG",
+                    style: theme.textTheme.titleSmall,
+                  ),
                 ),
               ),
               DataColumn(
-                label: Text(
-                  "BESCHREIBUNG",
-                  style: theme.textTheme.titleSmall,
+                label: SizedBox(
+                  width: 128,
+                  child: Text(
+                    "BESCHREIBUNG",
+                    style: theme.textTheme.titleSmall,
+                  ),
                 ),
               ),
               DataColumn(
-                label: Text(
-                  "TEILNEHMER",
-                  style: theme.textTheme.titleSmall,
+                label: SizedBox(
+                  width: 96,
+                  child: Text(
+                    "TEILNEHMER",
+                    style: theme.textTheme.titleSmall,
+                  ),
                 ),
               ),
             ],
@@ -103,23 +118,20 @@ class ExpenseList extends StatelessWidget {
                 DataRow(
                   cells: [
                     DataCell(
-                      SizedBox(
-                        width: 120,
-                        child: Builder(
-                          builder: (context) {
-                            var participant = list.participants
-                                .firstWhereOrNull((x) => x.id == expense.buyer);
-                            return UserProfile(
-                              avatarUrl: participant?.avatarUrl,
-                              name: participant?.name ?? "Name",
-                              subtitle: DateFormat('dd.MM.yyyy').format(expense.date),
-                            );
-                          },
-                        ),
+                      Builder(
+                        builder: (context) {
+                          var participant = list.participants
+                              .firstWhereOrNull((x) => x.id == expense.buyer);
+                          return UserProfile(
+                            avatarUrl: participant?.avatarUrl,
+                            name: participant?.name ?? "Name",
+                            subtitle: DateFormat('dd.MM.yyyy').format(expense.date),
+                          );
+                        },
                       ),
                     ),
                     DataCell(Text(
-                      "${list.currency}${expense.amount.toStringAsFixed(2)}",
+                      "${CurrencyMapper.getSymbol(list.currency)}${expense.amount.toStringAsFixed(2)}",
                       style: theme.textTheme.titleSmall,
                     )),
                     DataCell(Text(
@@ -127,15 +139,25 @@ class ExpenseList extends StatelessWidget {
                       style: TextStyle(overflow: TextOverflow.ellipsis),
                     )),
                     DataCell(
-                      Row(
-                        children: [
-                          for (var pid in expense.participants)
-                            UserProfile(avatarUrl: list.participants.firstWhereOrNull((p) => p.id == pid)?.avatarUrl,)
-                        ],
-                      ),
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            for (int i = 0; i < expense.participants.length; i++)
+                              Positioned(
+                                left: i * 25.0,
+                                child: UserProfile(
+                                  avatarUrl: list.participants
+                                      .firstWhereOrNull((p) => p.id == expense.participants[i])
+                                      ?.avatarUrl,
+                                ),
+                              ),
+                          ],
+                        )
                         ),
                   ],
                 ),
+              for (var i = 0; i < max(0, 3 - list.expenses.length); i++)
+                DataRow(cells: List.generate(4, (index) => DataCell(Container()))),
             ],
           ),
         ),
@@ -150,7 +172,7 @@ class ExpenseList extends StatelessWidget {
               style: theme.textTheme.bodySmall,
             ),
             Text(
-              "${list.currency}${list.totalCost.toStringAsFixed(2)}",
+              "${CurrencyMapper.getSymbol(list.currency)}${list.totalCost.toStringAsFixed(2)}",
               style: theme.textTheme.titleSmall,
             )
           ],
@@ -163,7 +185,7 @@ class ExpenseList extends StatelessWidget {
               style: theme.textTheme.bodySmall,
             ),
             Text(
-              "${list.currency}${(list.totalCost / 6).toStringAsFixed(2)}",
+              "${CurrencyMapper.getSymbol(list.currency)}${(list.totalCost / 6).toStringAsFixed(2)}",
               style: theme.textTheme.titleSmall,
             )
           ],

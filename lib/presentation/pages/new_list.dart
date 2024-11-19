@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
+import 'package:equaly/logic/currency_mapper.dart';
 import 'package:equaly/presentation/pages/new_participant.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -125,38 +126,23 @@ class _NewListPageState extends State<NewListPage> {
                 DropdownButtonFormField<String>(
                   value: currency,
                   items: [
-                    DropdownMenuItem(
-                        value: 'EUR',
-                        child: Row(
-                          children: [
-                            Text(
-                              '€',
-                              style: theme.textTheme.labelMedium?.copyWith(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(width: 4.0),
-                            Text(
-                              'EUR',
-                              style: theme.textTheme.labelMedium,
-                            ),
-                          ],
-                        )),
-                    DropdownMenuItem(
-                        value: 'USD',
-                        child: Row(
-                          children: [
-                            Text(
-                              '\$',
-                              style: theme.textTheme.labelMedium?.copyWith(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(width: 4.0),
-                            Text(
-                              'USD',
-                              style: theme.textTheme.labelMedium,
-                            ),
-                          ],
-                        )),
+                    for (var item in CurrencyMapper.getAllCurrencies().entries)
+                      DropdownMenuItem(
+                          value: item.key,
+                          child: Row(
+                            children: [
+                              Text(
+                                item.value,
+                                style: theme.textTheme.labelMedium?.copyWith(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(width: 4.0),
+                              Text(
+                                item.key,
+                                style: theme.textTheme.labelMedium,
+                              ),
+                            ],
+                          )),
                   ],
                   onChanged: (value) {
                     currency = value!;
@@ -308,13 +294,15 @@ class _NewListPageState extends State<NewListPage> {
                   child: FilledButton(
                     onPressed: () {
                       if (selectedEmoji == null || listTitle.text == "") return;
-                      createExpenseList(listTitle.text, selectedColor, selectedEmoji!,
-                          currency, participants);
+                      createExpenseList(listTitle.text, selectedColor,
+                          selectedEmoji!, currency, participants);
                     },
                     style: theme.filledButtonTheme.style,
                     child: Text(
                       "Erstellen",
-                      style: theme.textTheme.labelLarge,
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        color: Colors.white,
+                      ),
                     ),
                   )),
             )

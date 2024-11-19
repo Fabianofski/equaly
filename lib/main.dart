@@ -1,4 +1,5 @@
 import 'package:equaly/logic/app_bar/app_bar_cubit.dart';
+import 'package:equaly/logic/currency_mapper.dart';
 import 'package:equaly/presentation/wireframe/bottom_nav.dart';
 import 'package:equaly/presentation/wireframe/app_bar.dart';
 import 'package:equaly/logic/list/expense_list_cubit.dart';
@@ -13,13 +14,17 @@ import 'presentation/pages/list.dart';
 import 'presentation/pages/profile.dart';
 import 'presentation/pages/settings.dart';
 
-void main() {
+void main() async {
   SystemChrome.setSystemUIOverlayStyle(
     SystemUiOverlayStyle.light.copyWith(
       statusBarColor: Color(0xFFE3EBF4),
       systemNavigationBarColor: Color(0xFFE3EBF4),
     ),
   );
+
+  WidgetsFlutterBinding.ensureInitialized();
+  await CurrencyMapper.initialize();
+
   runApp(App());
 }
 
@@ -70,7 +75,6 @@ class App extends StatelessWidget {
             labelLarge: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 20,
-              color: Colors.white,
             ),
             labelMedium: TextStyle(
               fontSize: 16,

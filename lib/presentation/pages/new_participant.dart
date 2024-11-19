@@ -94,7 +94,9 @@ class _NewParticipantState extends State<NewParticipant> {
                   style: theme.filledButtonTheme.style,
                   child: Text(
                     "Teilnehmer hinzufügen",
-                    style: theme.textTheme.labelLarge,
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: Colors.white,
+                    ),
                   ),
                 ))
           ],

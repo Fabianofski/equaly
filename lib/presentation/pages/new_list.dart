@@ -10,6 +10,8 @@ import 'package:equaly/logic/list/participant_state.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../../logic/utils/snack_bar.dart';
+
 class NewListPage extends StatefulWidget {
   const NewListPage({super.key});
 
@@ -36,36 +38,36 @@ class _NewListPageState extends State<NewListPage> {
 
   Future<void> createExpenseList(String title, Color color, String emoji,
       String currency, List<ParticipantState> participants) async {
-    var expenseList = ExpenseListState(
-      id: "",
-      title: title,
-      totalCost: 0,
-      creatorId: "user-001",
-      emoji: emoji,
-      color: color.value,
-      expenses: [],
-      currency: currency,
-      participants: participants,
-    );
-
-    var jsonEncoded = jsonEncode(expenseList.toJson());
-    final response = await http.post(
-        Uri.http('192.168.188.40:3000', '/v1/expense-list'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncoded);
-
-    if (response.statusCode != 200) {
-      final scaffold = ScaffoldMessenger.of(context);
-      scaffold.showSnackBar(
-        SnackBar(
-          content: Text("${response.statusCode} ${response.body}"),
-          backgroundColor: Colors.redAccent,
-        ),
+    try {
+      var expenseList = ExpenseListState(
+        id: "",
+        title: title,
+        totalCost: 0,
+        creatorId: "user-001",
+        emoji: emoji,
+        color: color.value,
+        expenses: [],
+        currency: currency,
+        participants: participants,
       );
-      return;
-    }
 
-    if (context.mounted) Navigator.pop(context);
+      var jsonEncoded = jsonEncode(expenseList.toJson());
+      final response = await http.post(
+          Uri.http('192.168.188.40:3000', '/v1/expense-list'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncoded);
+
+      if (response.statusCode != 200) {
+        throw Exception("${response.statusCode} ${response.body}");
+      }
+      if (navigatorKey.currentContext != null) {
+        Navigator.pop(navigatorKey.currentContext!);
+      }
+    } on http.ClientException catch (_) {
+      showSnackBarWithException("Connection Timeout");
+    } on Exception catch (exception) {
+      showSnackBarWithException(exception.toString());
+    }
   }
 
   @override

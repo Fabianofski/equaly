@@ -29,7 +29,7 @@ class HomePage extends StatelessWidget {
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
               childAspectRatio: (192.0 / 234.0),
-              children: [for (var list in state) ExpenseListCard(list: list)],
+              children: [for (var list in state) ExpenseListCard(list: list), if (state.isEmpty) Container()],
             ),
             Align(
               alignment: Alignment.bottomRight,

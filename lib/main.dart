@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'logic/utils/snack_bar.dart';
 import 'presentation/pages/home.dart';
 import 'presentation/pages/list.dart';
 import 'presentation/pages/profile.dart';
@@ -46,6 +47,7 @@ class App extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'Equaly',
+        navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           fontFamily: 'Open Sans',

@@ -4,6 +4,7 @@ import 'package:equaly/logic/app_bar/app_bar_cubit.dart';
 import 'package:equaly/logic/currency_mapper.dart';
 import 'package:equaly/logic/list/expense_list_cubit.dart';
 import 'package:equaly/presentation/components/user_profile.dart';
+import 'package:equaly/presentation/pages/new_expense.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -18,30 +19,38 @@ class ListPage extends StatelessWidget {
     return RefreshIndicator(
       onRefresh:
           BlocProvider.of<ExpenseListCubit>(context).fetchExpenseListsOfUser,
-      child: Stack(children: [
-        ListView(physics: AlwaysScrollableScrollPhysics(), children: [
-          BlocBuilder<SelectedExpenseListCubit, ExpenseListState?>(
-              builder: (context, list) {
-            if (list == null) return Text("Select a list first");
-
-            BlocProvider.of<AppBarCubit>(context)
-                .setTitle('${list.emoji} ${list.title}');
-            return ExpenseList(list: list);
-          }),
-        ]),
-        Align(
-          alignment: Alignment.bottomRight,
-          child: FloatingActionButton(
-            onPressed: () => {},
-            backgroundColor: Theme.of(context).primaryColor,
-            shape: CircleBorder(),
-            child: const Icon(
-              FontAwesomeIcons.plus,
-              color: Colors.white,
+      child: BlocBuilder<SelectedExpenseListCubit, ExpenseListState?>(
+          builder: (context, list) {
+        if (list == null) return Text("Select a list first");
+        BlocProvider.of<AppBarCubit>(context)
+            .setTitle('${list.emoji} ${list.title}');
+        return Stack(children: [
+          ListView(
+              physics: AlwaysScrollableScrollPhysics(),
+              children: [ExpenseList(list: list)]),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: FloatingActionButton(
+              onPressed: () => {
+                showModalBottomSheet(
+                  context: context,
+                  showDragHandle: true,
+                  isScrollControlled: true,
+                  builder: (BuildContext context) {
+                    return NewExpenseModal(list: list);
+                  },
+                )
+              },
+              backgroundColor: Theme.of(context).primaryColor,
+              shape: CircleBorder(),
+              child: const Icon(
+                FontAwesomeIcons.plus,
+                color: Colors.white,
+              ),
             ),
-          ),
-        )
-      ]),
+          )
+        ]);
+      }),
     );
   }
 }
@@ -125,7 +134,8 @@ class ExpenseList extends StatelessWidget {
                           return UserProfile(
                             avatarUrl: participant?.avatarUrl,
                             name: participant?.name ?? "Name",
-                            subtitle: DateFormat('dd.MM.yyyy').format(expense.date),
+                            subtitle:
+                                DateFormat('dd.MM.yyyy').format(expense.date),
                           );
                         },
                       ),
@@ -138,26 +148,26 @@ class ExpenseList extends StatelessWidget {
                       expense.description,
                       style: TextStyle(overflow: TextOverflow.ellipsis),
                     )),
-                    DataCell(
-                        Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            for (int i = 0; i < expense.participants.length; i++)
-                              Positioned(
-                                left: i * 25.0,
-                                child: UserProfile(
-                                  avatarUrl: list.participants
-                                      .firstWhereOrNull((p) => p.id == expense.participants[i])
-                                      ?.avatarUrl,
-                                ),
-                              ),
-                          ],
-                        )
-                        ),
+                    DataCell(Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        for (int i = 0; i < expense.participants.length; i++)
+                          Positioned(
+                            left: i * 25.0,
+                            child: UserProfile(
+                              avatarUrl: list.participants
+                                  .firstWhereOrNull(
+                                      (p) => p.id == expense.participants[i])
+                                  ?.avatarUrl,
+                            ),
+                          ),
+                      ],
+                    )),
                   ],
                 ),
               for (var i = 0; i < max(0, 3 - list.expenses.length); i++)
-                DataRow(cells: List.generate(4, (index) => DataCell(Container()))),
+                DataRow(
+                    cells: List.generate(4, (index) => DataCell(Container()))),
             ],
           ),
         ),

@@ -1,4 +1,6 @@
 class ExpenseState {
+  final String id;
+  final String expenseListId;
   final String buyer;
   final num amount;
   final String description;
@@ -11,19 +13,25 @@ class ExpenseState {
     required this.description,
     required this.participants,
     required this.date,
+    required this.id,
+    required this.expenseListId,
   });
 
   Map<String, dynamic> toJson() => {
+        'id': id,
+        'expenseListId': expenseListId,
         'buyer': buyer,
         'amount': amount,
         'description': description,
-        'participants': participants,
-        'date': date
+        'participants': participants.join(','),
+        'date': '${date.toUtc().toIso8601String().split('.')[0]}Z',
       };
 
   factory ExpenseState.fromJson(Map<String, dynamic> json) {
     return switch (json) {
       {
+        'id': String id,
+        'expenseListId': String expenseListId,
         'buyer': String buyer,
         'amount': num amount,
         'description': String description,
@@ -31,6 +39,8 @@ class ExpenseState {
         'date': String date,
       } =>
         ExpenseState(
+          id: id,
+          expenseListId: expenseListId,
           buyer: buyer,
           amount: amount,
           description: description,

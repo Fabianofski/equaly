@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:equaly/logic/currency_mapper.dart';
 import 'package:equaly/logic/list/expense_list_cubit.dart';
 import 'package:equaly/presentation/components/user_profile.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -19,7 +21,9 @@ class NewExpenseModal extends StatefulWidget {
 
 class _NewExpenseModalState extends State<NewExpenseModal> {
   var listTitle = TextEditingController();
+  var amount = TextEditingController();
   String? buyer;
+  String? currency;
   List<String> checkedParticipants = [];
 
   Future<void> createExpense(String buyer, double amount, String description,
@@ -35,7 +39,6 @@ class _NewExpenseModalState extends State<NewExpenseModal> {
           expenseListId: widget.list.id);
 
       var jsonEncoded = jsonEncode(expenseList.toJson());
-      print(jsonEncoded);
       final response = await http.post(
           Uri.http('192.168.188.40:3000', '/v1/expense'),
           headers: {'Content-Type': 'application/json'},
@@ -52,6 +55,13 @@ class _NewExpenseModalState extends State<NewExpenseModal> {
     } on Exception catch (exception) {
       showSnackBarWithException(exception.toString());
     }
+  }
+
+  @override
+  void initState() {
+    checkedParticipants = widget.list.participants.map((p) => p.id).toList();
+    buyer = widget.list.participants.first.id;
+    super.initState();
   }
 
   @override
@@ -72,12 +82,92 @@ class _NewExpenseModalState extends State<NewExpenseModal> {
               style: theme.textTheme.titleMedium,
             ),
             SizedBox(height: 16),
+            Row(
+              children: [
+                DropdownButton(
+                    value: widget.list.currency,
+                    items: [
+                      for (var currency
+                          in CurrencyMapper.getAllCurrencies().entries)
+                        DropdownMenuItem(
+                            value: currency.key,
+                            child: Text(
+                              currency.value,
+                              style: theme.textTheme.labelLarge
+                                  ?.copyWith(fontSize: 32),
+                            )),
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        currency = value;
+                      });
+                    }),
+                const SizedBox(width: 4),
+                Stack(
+                  children: [
+                    IntrinsicWidth(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          minWidth: 86,
+                        ),
+                        child: TextField(
+                          controller: amount,
+                          keyboardType: TextInputType.number,
+                          textAlign: TextAlign.left,
+                          textAlignVertical: TextAlignVertical.bottom,
+                          style: theme.textTheme.labelLarge?.copyWith(
+                            fontSize: 32,
+                          ),
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            filled: false,
+                            isDense: true,
+                            hintText: '00.00',
+                            hintStyle: theme.textTheme.labelLarge?.copyWith(
+                              fontSize: 32,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          inputFormatters: [CurrencyInputFormatter()],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(width: 4),
+                if (currency != null && currency != widget.list.currency)
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      '(€2.83)',
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            Text(
+              "Datum",
+              style: theme.textTheme.labelMedium,
+            ),
+            SizedBox(height: 4),
+            InputDatePickerFormField(
+              firstDate: DateTime(1999),
+              lastDate: DateTime(2099),
+              acceptEmptyDate: false,
+              initialDate: DateTime.now(),
+            ),
+            SizedBox(height: 16),
             Text(
               "Käufer",
               style: theme.textTheme.labelMedium,
             ),
             SizedBox(height: 4),
             DropdownButtonFormField(
+                value: buyer,
                 items: [
                   for (var participant in widget.list.participants)
                     DropdownMenuItem(
@@ -101,15 +191,15 @@ class _NewExpenseModalState extends State<NewExpenseModal> {
             TextField(
               controller: listTitle,
               decoration: InputDecoration(
-                hintText: "Supermark, Tanken...",
+                hintText: "Supermarkt, Tanken...",
               ),
             ),
-            SizedBox(height: 16),
             SizedBox(height: 16),
             Text(
               'Teilnehmer',
               style: theme.textTheme.labelMedium,
             ),
+            SizedBox(height: 4),
             Wrap(
                 // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 spacing: 42,
@@ -141,8 +231,8 @@ class _NewExpenseModalState extends State<NewExpenseModal> {
                   width: double.infinity,
                   child: FilledButton(
                     onPressed: () {
-                      createExpense(buyer!, 10, listTitle.text,
-                          checkedParticipants, DateTime.now());
+                      createExpense(buyer!, double.parse(amount.text),
+                          listTitle.text, checkedParticipants, DateTime.now());
                     },
                     style: theme.filledButtonTheme.style,
                     child: Text(

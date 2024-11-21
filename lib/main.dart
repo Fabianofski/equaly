@@ -101,6 +101,20 @@ class App extends StatelessWidget {
               )
             )
           ),
+          datePickerTheme: DatePickerThemeData(
+            backgroundColor: Color(0xFFE9F0F7),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              side: BorderSide(
+                color: Colors.grey,
+                width: 1.0,
+              ),
+            ),
+            dayStyle: TextStyle(
+              color: Colors.black,
+              fontSize: 14,
+            ),
+          ),
           inputDecorationTheme: InputDecorationTheme(
             filled: true,
             fillColor: Color(0xFFE9F0F7),

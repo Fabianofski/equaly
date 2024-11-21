@@ -1,6 +1,22 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
 
+class CurrencyInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    var text = newValue.text;
+    final regExp = RegExp(r'^\d*\.?\d{0,2}$');
+    if (regExp.hasMatch(text)) {
+      return newValue;
+    }
+
+    return oldValue;
+  }
+}
+
 class CurrencyMapper {
   static Map<String, String> _currencyMap = {};
 

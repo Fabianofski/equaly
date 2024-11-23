@@ -37,6 +37,7 @@ class _NewExpenseModalState extends State<NewExpenseModal> {
       initialDate: date,
       firstDate: DateTime(1999),
       lastDate: DateTime(2099),
+      helpText: "Datum wählen"
     );
     if (pickedDate != null && pickedDate != date) {
       setState(() {
@@ -90,7 +91,7 @@ class _NewExpenseModalState extends State<NewExpenseModal> {
   @override
   void initState() {
     checkedParticipants = widget.list.participants.map((p) => p.id).toList();
-    buyer = widget.list.participants.first.id;
+    buyer = widget.list.participants.firstOrNull?.id;
     currency = widget.list.currency;
     super.initState();
   }
@@ -179,7 +180,9 @@ class _NewExpenseModalState extends State<NewExpenseModal> {
             ),
             SizedBox(height: 4),
             GestureDetector(
-              onTap: () async { await selectDate(context); },
+              onTap: () async {
+                await selectDate(context);
+              },
               child: Container(
                 width: double.infinity,
                 height: 60,
@@ -196,7 +199,7 @@ class _NewExpenseModalState extends State<NewExpenseModal> {
                         DateFormat('dd.MM.yyyy').format(date),
                         style: theme.inputDecorationTheme.labelStyle,
                       ),
-                      Icon(FontAwesomeIcons.solidCalendar),
+                      Icon(FontAwesomeIcons.solidCalendarDays),
                     ],
                   ),
                 ),
@@ -274,7 +277,7 @@ class _NewExpenseModalState extends State<NewExpenseModal> {
                   child: FilledButton(
                     onPressed: () {
                       createExpense(buyer!, converted, listTitle.text,
-                          checkedParticipants, DateTime.now());
+                          checkedParticipants, date);
                     },
                     style: theme.filledButtonTheme.style,
                     child: Text(

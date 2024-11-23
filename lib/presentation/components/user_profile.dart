@@ -37,8 +37,13 @@ class UserProfile extends StatelessWidget {
                   : null,
             ),
             if (checked)
-              Positioned.fill(
-                  child: Center(child: Icon(FontAwesomeIcons.check))),
+              CircleAvatar(
+                maxRadius: 18,
+                backgroundColor: Color(0x88FFFFFF),
+                child: Center(
+                  child: Icon(FontAwesomeIcons.check, color: Colors.black,),
+                ),
+              ),
           ],
         ),
         if (name != null || subtitle != null)

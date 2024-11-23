@@ -135,7 +135,7 @@ class App extends StatelessWidget {
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.0),
               borderSide: BorderSide(
-                color: Colors.blue,
+                color: Color(0xFF15376A),
                 width: 1.5,
               ),
             ),
@@ -145,7 +145,7 @@ class App extends StatelessWidget {
               fontSize: 14,
             ),
             labelStyle: TextStyle(
-              fontSize: 14,
+              fontSize: 16,
             )
           ),
           scaffoldBackgroundColor: const Color(0xFFEEF4FC),

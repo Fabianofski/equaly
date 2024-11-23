@@ -5,7 +5,9 @@ import 'package:equaly/logic/currency_mapper.dart';
 import 'package:equaly/logic/list/expense_list_cubit.dart';
 import 'package:equaly/presentation/components/user_profile.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 import '../../logic/list/expense_state.dart';
 import '../../logic/utils/snack_bar.dart';
@@ -26,7 +28,22 @@ class _NewExpenseModalState extends State<NewExpenseModal> {
   Timer? debounce;
   String? buyer;
   String currency = "";
+  DateTime date = DateTime.now();
   List<String> checkedParticipants = [];
+
+  Future<void> selectDate(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: date,
+      firstDate: DateTime(1999),
+      lastDate: DateTime(2099),
+    );
+    if (pickedDate != null && pickedDate != date) {
+      setState(() {
+        date = pickedDate;
+      });
+    }
+  }
 
   void convertCurrency(String value) {
     setState(() {
@@ -161,11 +178,29 @@ class _NewExpenseModalState extends State<NewExpenseModal> {
               style: theme.textTheme.labelMedium,
             ),
             SizedBox(height: 4),
-            InputDatePickerFormField(
-              firstDate: DateTime(1999),
-              lastDate: DateTime(2099),
-              acceptEmptyDate: false,
-              initialDate: DateTime.now(),
+            GestureDetector(
+              onTap: () async { await selectDate(context); },
+              child: Container(
+                width: double.infinity,
+                height: 60,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12.0),
+                  border: Border.all(width: 1, color: Colors.grey),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        DateFormat('dd.MM.yyyy').format(date),
+                        style: theme.inputDecorationTheme.labelStyle,
+                      ),
+                      Icon(FontAwesomeIcons.solidCalendar),
+                    ],
+                  ),
+                ),
+              ),
             ),
             SizedBox(height: 16),
             Text(

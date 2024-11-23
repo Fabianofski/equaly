@@ -1,9 +1,9 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:equaly/logic/currency_mapper.dart';
 import 'package:equaly/logic/list/expense_list_cubit.dart';
 import 'package:equaly/presentation/components/user_profile.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -22,9 +22,22 @@ class NewExpenseModal extends StatefulWidget {
 class _NewExpenseModalState extends State<NewExpenseModal> {
   var listTitle = TextEditingController();
   var amount = TextEditingController();
+  var converted = 0.0;
+  Timer? debounce;
   String? buyer;
-  String? currency;
+  String currency = "";
   List<String> checkedParticipants = [];
+
+  void convertCurrency(String value) {
+    setState(() {
+      if (value.isEmpty) {
+        converted = 0;
+      } else {
+        converted = CurrencyMapper.convertToMainCurrency(
+            double.parse(value), currency, widget.list.currency);
+      }
+    });
+  }
 
   Future<void> createExpense(String buyer, double amount, String description,
       List<String> participants, DateTime date) async {
@@ -61,6 +74,7 @@ class _NewExpenseModalState extends State<NewExpenseModal> {
   void initState() {
     checkedParticipants = widget.list.participants.map((p) => p.id).toList();
     buyer = widget.list.participants.first.id;
+    currency = widget.list.currency;
     super.initState();
   }
 
@@ -85,7 +99,7 @@ class _NewExpenseModalState extends State<NewExpenseModal> {
             Row(
               children: [
                 DropdownButton(
-                    value: widget.list.currency,
+                    value: currency,
                     items: [
                       for (var currency
                           in CurrencyMapper.getAllCurrencies().entries)
@@ -99,49 +113,42 @@ class _NewExpenseModalState extends State<NewExpenseModal> {
                     ],
                     onChanged: (value) {
                       setState(() {
-                        currency = value;
+                        currency = value!;
                       });
+                      convertCurrency(amount.text);
                     }),
                 const SizedBox(width: 4),
-                Stack(
-                  children: [
-                    IntrinsicWidth(
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(
-                          minWidth: 86,
-                        ),
-                        child: TextField(
-                          controller: amount,
-                          keyboardType: TextInputType.number,
-                          textAlign: TextAlign.left,
-                          textAlignVertical: TextAlignVertical.bottom,
-                          style: theme.textTheme.labelLarge?.copyWith(
-                            fontSize: 32,
-                          ),
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            focusedBorder: InputBorder.none,
-                            enabledBorder: InputBorder.none,
-                            filled: false,
-                            isDense: true,
-                            hintText: '00.00',
-                            hintStyle: theme.textTheme.labelLarge?.copyWith(
-                              fontSize: 32,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                          inputFormatters: [CurrencyInputFormatter()],
-                        ),
+                IntrinsicWidth(
+                  child: TextField(
+                    controller: amount,
+                    onChanged: convertCurrency,
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.left,
+                    textAlignVertical: TextAlignVertical.bottom,
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      fontSize: 32,
+                    ),
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      filled: false,
+                      isDense: true,
+                      hintText: amount.text.isEmpty ? '00.00' : '',
+                      hintStyle: theme.textTheme.labelLarge?.copyWith(
+                        fontSize: 32,
+                        color: Colors.grey[600],
                       ),
                     ),
-                  ],
+                    inputFormatters: [CurrencyInputFormatter()],
+                  ),
                 ),
                 const SizedBox(width: 4),
-                if (currency != null && currency != widget.list.currency)
+                if (currency != widget.list.currency)
                   Align(
                     alignment: Alignment.topLeft,
                     child: Text(
-                      '(€2.83)',
+                      "(${CurrencyMapper.getSymbol(widget.list.currency)}${converted.toStringAsFixed(2)})",
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: Colors.grey[600],
                       ),
@@ -231,8 +238,8 @@ class _NewExpenseModalState extends State<NewExpenseModal> {
                   width: double.infinity,
                   child: FilledButton(
                     onPressed: () {
-                      createExpense(buyer!, double.parse(amount.text),
-                          listTitle.text, checkedParticipants, DateTime.now());
+                      createExpense(buyer!, converted, listTitle.text,
+                          checkedParticipants, DateTime.now());
                     },
                     style: theme.filledButtonTheme.style,
                     child: Text(

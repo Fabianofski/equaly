@@ -103,192 +103,194 @@ class _NewExpenseModalState extends State<NewExpenseModal> {
     return Padding(
       padding:
           EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              "NEUE AUSGABE",
-              style: theme.textTheme.titleMedium,
-            ),
-            SizedBox(height: 16),
-            Row(
-              children: [
-                DropdownButton(
-                    value: currency,
-                    items: [
-                      for (var currency
-                          in CurrencyMapper.getAllCurrencies().entries)
-                        DropdownMenuItem(
-                            value: currency.key,
-                            child: Text(
-                              currency.value,
-                              style: theme.textTheme.labelLarge
-                                  ?.copyWith(fontSize: 32),
-                            )),
-                    ],
-                    onChanged: (value) {
-                      setState(() {
-                        currency = value!;
-                      });
-                      convertCurrency(amount.text);
-                    }),
-                const SizedBox(width: 4),
-                IntrinsicWidth(
-                  child: TextField(
-                    controller: amount,
-                    onChanged: convertCurrency,
-                    keyboardType: TextInputType.number,
-                    textAlign: TextAlign.left,
-                    textAlignVertical: TextAlignVertical.bottom,
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      fontSize: 32,
-                    ),
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      filled: false,
-                      isDense: true,
-                      hintText: amount.text.isEmpty ? '00.00' : '',
-                      hintStyle: theme.textTheme.labelLarge?.copyWith(
-                        fontSize: 32,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                    inputFormatters: [CurrencyInputFormatter()],
-                  ),
-                ),
-                const SizedBox(width: 4),
-                if (currency != widget.list.currency)
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      "(${CurrencyMapper.getSymbol(widget.list.currency)}${converted.toStringAsFixed(2)})",
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-            Text(
-              "Datum",
-              style: theme.textTheme.labelMedium,
-            ),
-            SizedBox(height: 4),
-            GestureDetector(
-              onTap: () async {
-                await selectDate(context);
-              },
-              child: Container(
-                width: double.infinity,
-                height: 60,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12.0),
-                  border: Border.all(width: 1, color: Colors.grey),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        DateFormat('dd.MM.yyyy').format(date),
-                        style: theme.inputDecorationTheme.labelStyle,
-                      ),
-                      Icon(FontAwesomeIcons.solidCalendarDays),
-                    ],
-                  ),
-                ),
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "NEUE AUSGABE",
+                style: theme.textTheme.titleMedium,
               ),
-            ),
-            SizedBox(height: 16),
-            Text(
-              "Käufer",
-              style: theme.textTheme.labelMedium,
-            ),
-            SizedBox(height: 4),
-            DropdownButtonFormField(
-                value: buyer,
-                items: [
-                  for (var participant in widget.list.participants)
-                    DropdownMenuItem(
-                        value: participant.id,
-                        child: UserProfile(
-                          avatarUrl: participant.avatarUrl,
-                          name: participant.name,
-                        )),
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    buyer = value;
-                  });
-                }),
-            SizedBox(height: 16),
-            Text(
-              "Beschreibung",
-              style: theme.textTheme.labelMedium,
-            ),
-            SizedBox(height: 4),
-            TextField(
-              controller: listTitle,
-              decoration: InputDecoration(
-                hintText: "Supermarkt, Tanken...",
-              ),
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Teilnehmer',
-              style: theme.textTheme.labelMedium,
-            ),
-            SizedBox(height: 4),
-            Wrap(
-                // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                spacing: 42,
-                runSpacing: 6,
+              SizedBox(height: 16),
+              Row(
                 children: [
-                  for (var participant in widget.list.participants)
-                    GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            if (checkedParticipants.contains(participant.id)) {
-                              checkedParticipants.remove(participant.id);
-                            } else {
-                              checkedParticipants.add(participant.id);
-                            }
-                          });
-                        },
-                        child: UserProfile(
-                          avatarUrl: participant.avatarUrl,
-                          name: participant.name,
-                          checked: checkedParticipants.contains(participant.id),
-                        ))
-                ]),
-            SizedBox(
-              height: 96,
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: SizedBox(
-                  width: double.infinity,
-                  child: FilledButton(
-                    onPressed: () {
-                      createExpense(buyer!, converted, listTitle.text,
-                          checkedParticipants, date);
-                    },
-                    style: theme.filledButtonTheme.style,
-                    child: Text(
-                      "Hinzufügen",
+                  DropdownButton(
+                      value: currency,
+                      items: [
+                        for (var currency
+                            in CurrencyMapper.getAllCurrencies().entries)
+                          DropdownMenuItem(
+                              value: currency.key,
+                              child: Text(
+                                currency.value,
+                                style: theme.textTheme.labelLarge
+                                    ?.copyWith(fontSize: 32),
+                              )),
+                      ],
+                      onChanged: (value) {
+                        setState(() {
+                          currency = value!;
+                        });
+                        convertCurrency(amount.text);
+                      }),
+                  const SizedBox(width: 4),
+                  IntrinsicWidth(
+                    child: TextField(
+                      controller: amount,
+                      onChanged: convertCurrency,
+                      keyboardType: TextInputType.number,
+                      textAlign: TextAlign.left,
+                      textAlignVertical: TextAlignVertical.bottom,
                       style: theme.textTheme.labelLarge?.copyWith(
-                        color: Colors.white,
+                        fontSize: 32,
+                      ),
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        filled: false,
+                        isDense: true,
+                        hintText: amount.text.isEmpty ? '00.00' : '',
+                        hintStyle: theme.textTheme.labelLarge?.copyWith(
+                          fontSize: 32,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      inputFormatters: [CurrencyInputFormatter()],
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  if (currency != widget.list.currency)
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        "(${CurrencyMapper.getSymbol(widget.list.currency)}${converted.toStringAsFixed(2)})",
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: Colors.grey[600],
+                        ),
                       ),
                     ),
-                  )),
-            )
-          ],
+                ],
+              ),
+              Text(
+                "Datum",
+                style: theme.textTheme.labelMedium,
+              ),
+              SizedBox(height: 4),
+              GestureDetector(
+                onTap: () async {
+                  await selectDate(context);
+                },
+                child: Container(
+                  width: double.infinity,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12.0),
+                    border: Border.all(width: 1, color: Colors.grey),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          DateFormat('dd.MM.yyyy').format(date),
+                          style: theme.inputDecorationTheme.labelStyle,
+                        ),
+                        Icon(FontAwesomeIcons.solidCalendarDays),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 16),
+              Text(
+                "Käufer",
+                style: theme.textTheme.labelMedium,
+              ),
+              SizedBox(height: 4),
+              DropdownButtonFormField(
+                  value: buyer,
+                  items: [
+                    for (var participant in widget.list.participants)
+                      DropdownMenuItem(
+                          value: participant.id,
+                          child: UserProfile(
+                            avatarUrl: participant.avatarUrl,
+                            name: participant.name,
+                          )),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      buyer = value;
+                    });
+                  }),
+              SizedBox(height: 16),
+              Text(
+                "Beschreibung",
+                style: theme.textTheme.labelMedium,
+              ),
+              SizedBox(height: 4),
+              TextField(
+                controller: listTitle,
+                decoration: InputDecoration(
+                  hintText: "Supermarkt, Tanken...",
+                ),
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Teilnehmer',
+                style: theme.textTheme.labelMedium,
+              ),
+              SizedBox(height: 4),
+              Wrap(
+                  // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  spacing: 42,
+                  runSpacing: 6,
+                  children: [
+                    for (var participant in widget.list.participants)
+                      GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              if (checkedParticipants.contains(participant.id)) {
+                                checkedParticipants.remove(participant.id);
+                              } else {
+                                checkedParticipants.add(participant.id);
+                              }
+                            });
+                          },
+                          child: UserProfile(
+                            avatarUrl: participant.avatarUrl,
+                            name: participant.name,
+                            checked: checkedParticipants.contains(participant.id),
+                          ))
+                  ]),
+              SizedBox(
+                height: 96,
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      onPressed: () {
+                        createExpense(buyer!, converted, listTitle.text,
+                            checkedParticipants, date);
+                      },
+                      style: theme.filledButtonTheme.style,
+                      child: Text(
+                        "Hinzufügen",
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: Colors.white,
+                        ),
+                      ),
+                    )),
+              )
+            ],
+          ),
         ),
       ),
     );

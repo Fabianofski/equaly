@@ -36,7 +36,6 @@ class CurrencyMapper {
       }
       var data = json.decode(response.body) as Map<String, dynamic>;
       _currencyConversionMap = data.remove("rates");
-      print(_currencyConversionMap);
     } on http.ClientException catch (_) {
       showSnackBarWithException("Connection Timeout");
     } on Exception catch (exception) {

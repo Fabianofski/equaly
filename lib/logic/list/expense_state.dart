@@ -23,7 +23,7 @@ class ExpenseState {
         'buyer': buyer,
         'amount': amount,
         'description': description,
-        'participants': participants.join(','),
+        'participants': participants,
         'date': '${date.toUtc().toIso8601String().split('.')[0]}Z',
       };
 
@@ -35,7 +35,7 @@ class ExpenseState {
         'buyer': String buyer,
         'amount': num amount,
         'description': String description,
-        'participants': String participants,
+        'participants': List<dynamic> participants,
         'date': String date,
       } =>
         ExpenseState(
@@ -44,7 +44,7 @@ class ExpenseState {
           buyer: buyer,
           amount: amount,
           description: description,
-          participants: participants.split(','),
+          participants: participants.cast<String>(),
           date: DateTime.parse(date),
         ),
       _ => throw const FormatException("Failed to load Expense from Json"),

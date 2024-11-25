@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:equaly/logic/list/expense_list_wrapper_state.dart';
 import 'package:equaly/logic/list/participant_state.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,7 +11,7 @@ import 'expense_state.dart';
 
 part 'expense_list_state.dart';
 
-class ExpenseListCubit extends Cubit<List<ExpenseListState>> {
+class ExpenseListCubit extends Cubit<List<ExpenseListWrapperState>> {
   ExpenseListCubit() : super([]) {
     fetchExpenseListsOfUser();
   }
@@ -24,10 +25,10 @@ class ExpenseListCubit extends Cubit<List<ExpenseListState>> {
         throw Exception("${response.statusCode} ${response.body}");
       }
       final jsonData = jsonDecode(utf8.decode(response.bodyBytes));
-      List<ExpenseListState> expenseLists = [];
+      List<ExpenseListWrapperState> expenseLists = [];
       for (var entry in jsonData) {
         var expenseList =
-            ExpenseListState.fromJson(entry as Map<String, dynamic>);
+            ExpenseListWrapperState.fromJson(entry as Map<String, dynamic>);
         expenseLists.add(expenseList);
       }
       emit(expenseLists);
@@ -39,10 +40,10 @@ class ExpenseListCubit extends Cubit<List<ExpenseListState>> {
   }
 }
 
-class SelectedExpenseListCubit extends Cubit<ExpenseListState?> {
+class SelectedExpenseListCubit extends Cubit<ExpenseListWrapperState?> {
   SelectedExpenseListCubit(super.state);
 
-  void selectNewList(ExpenseListState newState) {
+  void selectNewList(ExpenseListWrapperState newState) {
     emit(newState);
   }
 }

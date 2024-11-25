@@ -2,7 +2,10 @@ import 'dart:math';
 
 import 'package:equaly/logic/app_bar/app_bar_cubit.dart';
 import 'package:equaly/logic/currency_mapper.dart';
+import 'package:equaly/logic/list/expense_list_compensation_state.dart';
 import 'package:equaly/logic/list/expense_list_cubit.dart';
+import 'package:equaly/logic/list/expense_list_share_state.dart';
+import 'package:equaly/logic/list/expense_list_wrapper_state.dart';
 import 'package:equaly/presentation/components/user_profile.dart';
 import 'package:equaly/presentation/pages/new_expense.dart';
 import 'package:flutter/material.dart';
@@ -19,15 +22,15 @@ class ListPage extends StatelessWidget {
     return RefreshIndicator(
       onRefresh:
           BlocProvider.of<ExpenseListCubit>(context).fetchExpenseListsOfUser,
-      child: BlocBuilder<SelectedExpenseListCubit, ExpenseListState?>(
+      child: BlocBuilder<SelectedExpenseListCubit, ExpenseListWrapperState?>(
           builder: (context, list) {
         if (list == null) return Text("Select a list first");
         BlocProvider.of<AppBarCubit>(context)
-            .setTitle('${list.emoji} ${list.title}');
+            .setTitle('${list.expenseList.emoji} ${list.expenseList.title}');
         return Stack(children: [
           ListView(
               physics: AlwaysScrollableScrollPhysics(),
-              children: [ExpenseList(list: list)]),
+              children: [ExpenseList(wrapper: list)]),
           Align(
             alignment: Alignment.bottomRight,
             child: FloatingActionButton(
@@ -37,7 +40,7 @@ class ListPage extends StatelessWidget {
                   showDragHandle: true,
                   isScrollControlled: true,
                   builder: (BuildContext context) {
-                    return NewExpenseModal(list: list);
+                    return NewExpenseModal(list: list.expenseList);
                   },
                 )
               },
@@ -56,9 +59,15 @@ class ListPage extends StatelessWidget {
 }
 
 class ExpenseList extends StatelessWidget {
+  final ExpenseListWrapperState wrapper;
   final ExpenseListState list;
+  final List<ExpenseListCompensationState> compensations;
+  final List<ExpenseListShareState> shares;
 
-  const ExpenseList({super.key, required this.list});
+  ExpenseList({super.key, required this.wrapper})
+      : compensations = wrapper.compensations,
+        shares = wrapper.shares,
+        list = wrapper.expenseList;
 
   @override
   Widget build(BuildContext context) {

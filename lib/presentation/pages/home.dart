@@ -1,6 +1,7 @@
 import 'package:equaly/logic/app_bar/app_bar_cubit.dart';
 import 'package:equaly/logic/currency_mapper.dart';
 import 'package:equaly/logic/list/expense_list_cubit.dart';
+import 'package:equaly/logic/list/expense_list_wrapper_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -15,7 +16,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     BlocProvider.of<AppBarCubit>(context).setTitle('🏡 Home');
 
-    return BlocBuilder<ExpenseListCubit, List<ExpenseListState>>(
+    return BlocBuilder<ExpenseListCubit, List<ExpenseListWrapperState>>(
         builder: (context, state) {
       return RefreshIndicator(
         onRefresh:
@@ -29,17 +30,24 @@ class HomePage extends StatelessWidget {
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
               childAspectRatio: (192.0 / 234.0),
-              children: [for (var list in state) ExpenseListCard(list: list), if (state.isEmpty) Container()],
+              children: [
+                for (var list in state) ExpenseListCard(list: list),
+                if (state.isEmpty) Container()
+              ],
             ),
             Align(
               alignment: Alignment.bottomRight,
               child: FloatingActionButton(
                 onPressed: () => {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => NewListPage()))
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => NewListPage()))
                 },
                 backgroundColor: Theme.of(context).primaryColor,
                 shape: CircleBorder(),
-                child: const Icon(FontAwesomeIcons.plus, color: Colors.white,),
+                child: const Icon(
+                  FontAwesomeIcons.plus,
+                  color: Colors.white,
+                ),
               ),
             )
           ],
@@ -52,9 +60,9 @@ class HomePage extends StatelessWidget {
 class ExpenseListCard extends StatelessWidget {
   const ExpenseListCard({super.key, required this.list});
 
-  final ExpenseListState list;
+  final ExpenseListWrapperState list;
 
-  void selectNewList(BuildContext context, ExpenseListState state) {
+  void selectNewList(BuildContext context, ExpenseListWrapperState state) {
     BlocProvider.of<NavigationCubit>(context).setNavBarItem(1);
     BlocProvider.of<SelectedExpenseListCubit>(context).selectNewList(state);
   }
@@ -68,12 +76,12 @@ class ExpenseListCard extends StatelessWidget {
             onTap: () => {selectNewList(context, list)},
             child: Container(
               decoration: BoxDecoration(
-                color: Color(list.color),
+                color: Color(list.expenseList.color),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Center(
                 child: Text(
-                  list.emoji,
+                  list.expenseList.emoji,
                   style: const TextStyle(fontSize: 86),
                 ),
               ),
@@ -86,7 +94,7 @@ class ExpenseListCard extends StatelessWidget {
         Align(
           alignment: Alignment.centerLeft,
           child: Text(
-            list.title,
+            list.expenseList.title,
             maxLines: 1,
             style: const TextStyle(
               fontWeight: FontWeight.bold,
@@ -98,7 +106,8 @@ class ExpenseListCard extends StatelessWidget {
         ),
         Align(
           alignment: Alignment.centerLeft,
-          child: Text("${CurrencyMapper.getSymbol(list.currency)}${list.totalCost.toStringAsFixed(2)}"),
+          child: Text(
+              "${CurrencyMapper.getSymbol(list.expenseList.currency)}${list.expenseList.totalCost.toStringAsFixed(2)}"),
         ),
       ],
     );

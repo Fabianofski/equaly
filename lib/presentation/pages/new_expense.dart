@@ -81,7 +81,7 @@ class _NewExpenseModalState extends State<NewExpenseModal> {
       if (navigatorKey.currentContext != null) {
         Navigator.pop(navigatorKey.currentContext!);
       }
-    } on http.ClientException catch (e) {
+    } on http.ClientException catch (_) {
       showSnackBarWithException("Connection Timeout");
     } on Exception catch (exception) {
       showSnackBarWithException(exception.toString());

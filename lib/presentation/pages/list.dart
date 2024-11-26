@@ -6,6 +6,7 @@ import 'package:equaly/logic/list/expense_list_compensation_state.dart';
 import 'package:equaly/logic/list/expense_list_cubit.dart';
 import 'package:equaly/logic/list/expense_list_share_state.dart';
 import 'package:equaly/logic/list/expense_list_wrapper_state.dart';
+import 'package:equaly/presentation/components/list/compensations_table.dart';
 import 'package:equaly/presentation/components/list/expenses_table.dart';
 import 'package:equaly/presentation/components/list/shares_table.dart';
 import 'package:equaly/presentation/components/user_profile.dart';
@@ -88,11 +89,18 @@ class ExpenseList extends StatelessWidget {
           height: 16,
         ),
         Text("ANTEILE", style: theme.textTheme.titleSmall),
+        SizedBox(
+          height: 8,
+        ),
         SharesTable(shares: shares, list: list),
         SizedBox(
           height: 16,
         ),
         Text("VORGESCHLAGENER AUSGLEICH", style: theme.textTheme.titleSmall),
+        SizedBox(
+          height: 8,
+        ),
+        CompensationsTable(compensations: compensations, list: list,)
       ],
     );
   }

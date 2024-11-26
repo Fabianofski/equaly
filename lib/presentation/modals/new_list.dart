@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:equaly/logic/currency_mapper.dart';
-import 'package:equaly/presentation/pages/new_participant.dart';
+import 'package:equaly/presentation/modals/new_participant.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:equaly/logic/list/expense_list_cubit.dart';

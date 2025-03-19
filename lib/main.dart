@@ -1,5 +1,6 @@
 import 'package:equaly/logic/app_bar/app_bar_cubit.dart';
 import 'package:equaly/logic/currency_mapper.dart';
+import 'package:equaly/presentation/pages/login.dart';
 import 'package:equaly/presentation/wireframe/bottom_nav.dart';
 import 'package:equaly/presentation/wireframe/app_bar.dart';
 import 'package:equaly/logic/list/expense_list_cubit.dart';
@@ -167,7 +168,7 @@ class AppContainer extends StatelessWidget {
       NavbarItem.home: HomePage(),
       NavbarItem.list: ListPage(),
       NavbarItem.settings: SettingsPage(),
-      NavbarItem.profile: ProfilePage()
+      NavbarItem.profile: LoginPage()
     };
 
     return Scaffold(

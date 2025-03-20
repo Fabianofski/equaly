@@ -1,6 +1,7 @@
 import 'package:equaly/logic/app_bar/app_bar_cubit.dart';
+import 'package:equaly/logic/auth/auth_cubit.dart';
 import 'package:equaly/logic/currency_mapper.dart';
-import 'package:equaly/presentation/pages/login.dart';
+import 'package:equaly/presentation/pages/profile.dart';
 import 'package:equaly/presentation/wireframe/bottom_nav.dart';
 import 'package:equaly/presentation/wireframe/app_bar.dart';
 import 'package:equaly/logic/list/expense_list_cubit.dart';
@@ -13,7 +14,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'logic/utils/snack_bar.dart';
 import 'presentation/pages/home.dart';
 import 'presentation/pages/list.dart';
-import 'presentation/pages/profile.dart';
 import 'presentation/pages/settings.dart';
 
 void main() async {
@@ -39,6 +39,9 @@ class App extends StatelessWidget {
       providers: [
         BlocProvider<NavigationCubit>(
           create: (context) => NavigationCubit(),
+        ),
+        BlocProvider<AuthCubit>(
+          create: (context) => AuthCubit(),
         ),
         BlocProvider<ExpenseListCubit>(
             create: (context) => ExpenseListCubit()),
@@ -168,7 +171,7 @@ class AppContainer extends StatelessWidget {
       NavbarItem.home: HomePage(),
       NavbarItem.list: ListPage(),
       NavbarItem.settings: SettingsPage(),
-      NavbarItem.profile: LoginPage()
+      NavbarItem.profile: ProfilePage()
     };
 
     return Scaffold(

@@ -1,7 +1,5 @@
-import 'dart:math';
-
 import 'package:equaly/logic/app_bar/app_bar_cubit.dart';
-import 'package:equaly/logic/currency_mapper.dart';
+import 'package:equaly/logic/auth/auth_cubit.dart';
 import 'package:equaly/logic/list/expense_list_compensation_state.dart';
 import 'package:equaly/logic/list/expense_list_cubit.dart';
 import 'package:equaly/logic/list/expense_list_share_state.dart';
@@ -9,55 +7,58 @@ import 'package:equaly/logic/list/expense_list_wrapper_state.dart';
 import 'package:equaly/presentation/components/list/compensations_table.dart';
 import 'package:equaly/presentation/components/list/expenses_table.dart';
 import 'package:equaly/presentation/components/list/shares_table.dart';
-import 'package:equaly/presentation/components/user_profile.dart';
 import 'package:equaly/presentation/modals/new_expense.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:collection/collection.dart';
-import 'package:intl/intl.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class ListPage extends StatelessWidget {
   const ListPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      onRefresh:
-          BlocProvider.of<ExpenseListCubit>(context).fetchExpenseListsOfUser,
-      child: BlocBuilder<SelectedExpenseListCubit, ExpenseListWrapperState?>(
-          builder: (context, list) {
-        if (list == null) return Text("Select a list first");
-        BlocProvider.of<AppBarCubit>(context)
-            .setTitle('${list.expenseList.emoji} ${list.expenseList.title}');
-        return Stack(children: [
-          ListView(
-              physics: AlwaysScrollableScrollPhysics(),
-              children: [ExpenseList(wrapper: list)]),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: FloatingActionButton(
-              onPressed: () => {
-                showModalBottomSheet(
-                  context: context,
-                  showDragHandle: true,
-                  isScrollControlled: true,
-                  builder: (BuildContext context) {
-                    return NewExpenseModal(list: list.expenseList);
-                  },
-                )
-              },
-              backgroundColor: Theme.of(context).primaryColor,
-              shape: CircleBorder(),
-              child: const Icon(
-                FontAwesomeIcons.plus,
-                color: Colors.white,
+    return BlocBuilder<AuthCubit, GoogleSignInAccount?>(
+        builder: (context, account) {
+      return RefreshIndicator(
+        onRefresh: () {
+          return BlocProvider.of<ExpenseListCubit>(context)
+              .fetchExpenseListsOfUser(account);
+        },
+        child: BlocBuilder<SelectedExpenseListCubit, ExpenseListWrapperState?>(
+            builder: (context, list) {
+          if (list == null) return Text("Select a list first");
+          BlocProvider.of<AppBarCubit>(context)
+              .setTitle('${list.expenseList.emoji} ${list.expenseList.title}');
+          return Stack(children: [
+            ListView(
+                physics: AlwaysScrollableScrollPhysics(),
+                children: [ExpenseList(wrapper: list)]),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: FloatingActionButton(
+                onPressed: () => {
+                  showModalBottomSheet(
+                    context: context,
+                    showDragHandle: true,
+                    isScrollControlled: true,
+                    builder: (BuildContext context) {
+                      return NewExpenseModal(list: list.expenseList);
+                    },
+                  )
+                },
+                backgroundColor: Theme.of(context).primaryColor,
+                shape: CircleBorder(),
+                child: const Icon(
+                  FontAwesomeIcons.plus,
+                  color: Colors.white,
+                ),
               ),
-            ),
-          )
-        ]);
-      }),
-    );
+            )
+          ]);
+        }),
+      );
+    });
   }
 }
 
@@ -100,7 +101,10 @@ class ExpenseList extends StatelessWidget {
         SizedBox(
           height: 8,
         ),
-        CompensationsTable(compensations: compensations, list: list,)
+        CompensationsTable(
+          compensations: compensations,
+          list: list,
+        )
       ],
     );
   }

@@ -12,3 +12,14 @@ void showSnackBarWithException(String message) {
     ),
   );
 }
+
+void showSnackBarSuccess(String message) {
+  if (navigatorKey.currentContext == null) return;
+  final scaffold = ScaffoldMessenger.of(navigatorKey.currentContext!);
+  scaffold.showSnackBar(
+    SnackBar(
+      content: Text(message),
+      backgroundColor: Colors.greenAccent,
+    ),
+  );
+}

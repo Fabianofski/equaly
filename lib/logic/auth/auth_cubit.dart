@@ -7,7 +7,9 @@ import 'package:google_sign_in/google_sign_in.dart';
 class AuthCubit extends Cubit<GoogleSignInAccount?> {
   AuthCubit() : super(null);
 
-  final GoogleSignIn googleSignIn = GoogleSignIn();
+  final GoogleSignIn googleSignIn = GoogleSignIn(
+    serverClientId: "409120859082-v12cnpu453kqp6bm0drvk5289d0ll108.apps.googleusercontent.com"
+  );
 
   Future<void> signIn() async {
     try {

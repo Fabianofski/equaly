@@ -25,7 +25,6 @@ class ExpenseListCubit extends Cubit<List<ExpenseListWrapperState>> {
 
     try {
       GoogleSignInAuthentication auth = await user.authentication;
-      log("Signed in with: ${user.displayName}");
       final response = await http.get(
           Uri.http('192.168.188.40:3000', '/v1/expense-lists'),
           headers: {"Authorization": "Bearer ${auth.idToken}"});

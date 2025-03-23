@@ -18,47 +18,44 @@ class ListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthCubit, GoogleSignInAccount?>(
-        builder: (context, account) {
-      return RefreshIndicator(
-        onRefresh: () {
-          return BlocProvider.of<ExpenseListCubit>(context)
-              .fetchExpenseListsOfUser(account);
-        },
-        child: BlocBuilder<SelectedExpenseListCubit, ExpenseListWrapperState?>(
-            builder: (context, list) {
-          if (list == null) return Text("Select a list first");
-          BlocProvider.of<AppBarCubit>(context)
-              .setTitle('${list.expenseList.emoji} ${list.expenseList.title}');
-          return Stack(children: [
-            ListView(
-                physics: AlwaysScrollableScrollPhysics(),
-                children: [ExpenseList(wrapper: list)]),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: FloatingActionButton(
-                onPressed: () => {
-                  showModalBottomSheet(
-                    context: context,
-                    showDragHandle: true,
-                    isScrollControlled: true,
-                    builder: (BuildContext context) {
-                      return NewExpenseModal(list: list.expenseList);
-                    },
-                  )
-                },
-                backgroundColor: Theme.of(context).primaryColor,
-                shape: CircleBorder(),
-                child: const Icon(
-                  FontAwesomeIcons.plus,
-                  color: Colors.white,
-                ),
+    return RefreshIndicator(
+      onRefresh: () {
+        return BlocProvider.of<ExpenseListCubit>(context)
+            .fetchExpenseListsOfUser();
+      },
+      child: BlocBuilder<SelectedExpenseListCubit, ExpenseListWrapperState?>(
+          builder: (context, list) {
+        if (list == null) return Text("Select a list first");
+        BlocProvider.of<AppBarCubit>(context)
+            .setTitle('${list.expenseList.emoji} ${list.expenseList.title}');
+        return Stack(children: [
+          ListView(
+              physics: AlwaysScrollableScrollPhysics(),
+              children: [ExpenseList(wrapper: list)]),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: FloatingActionButton(
+              onPressed: () => {
+                showModalBottomSheet(
+                  context: context,
+                  showDragHandle: true,
+                  isScrollControlled: true,
+                  builder: (BuildContext context) {
+                    return NewExpenseModal(list: list.expenseList);
+                  },
+                )
+              },
+              backgroundColor: Theme.of(context).primaryColor,
+              shape: CircleBorder(),
+              child: const Icon(
+                FontAwesomeIcons.plus,
+                color: Colors.white,
               ),
-            )
-          ]);
-        }),
-      );
-    });
+            ),
+          )
+        ]);
+      }),
+    );
   }
 }
 

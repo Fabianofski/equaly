@@ -18,54 +18,50 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     BlocProvider.of<AppBarCubit>(context).setTitle('🏡 Home');
 
-    return BlocBuilder<AuthCubit, GoogleSignInAccount?>(
-      builder: (context, account) {
-        return BlocBuilder<ExpenseListCubit, List<ExpenseListWrapperState>>(
-            builder: (context, state) {
-              return RefreshIndicator(
-                  onRefresh: () {
-                      return BlocProvider.of<ExpenseListCubit>(context)
-                          .fetchExpenseListsOfUser(account);
-                  },
-                  child: Stack(
+    return BlocBuilder<ExpenseListCubit, List<ExpenseListWrapperState>>(
+        builder: (context, state) {
+          return RefreshIndicator(
+              onRefresh: () {
+                  return BlocProvider.of<ExpenseListCubit>(context)
+                      .fetchExpenseListsOfUser();
+              },
+              child: Stack(
+                children: [
+                  GridView.count(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    childAspectRatio: (192.0 / 234.0),
                     children: [
-                      GridView.count(
-                        physics: AlwaysScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                        childAspectRatio: (192.0 / 234.0),
-                        children: [
-                          for (var list in state) ExpenseListCard(list: list),
-                          if (state.isEmpty) Container()
-                        ],
-                      ),
-                      Align(
-                        alignment: Alignment.bottomRight,
-                        child: FloatingActionButton(
-                          onPressed: () =>
-                          {
-                            Navigator.push(context,
-                                MaterialPageRoute(
-                                    builder: (context) => NewListPage()))
-                          },
-                          backgroundColor: Theme
-                              .of(context)
-                              .primaryColor,
-                          shape: CircleBorder(),
-                          child: const Icon(
-                            FontAwesomeIcons.plus,
-                            color: Colors.white,
-                          ),
-                        ),
-                      )
+                      for (var list in state) ExpenseListCard(list: list),
+                      if (state.isEmpty) Container()
                     ],
                   ),
-                );
-        });
-      }
-    );
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: FloatingActionButton(
+                      onPressed: () =>
+                      {
+                        Navigator.push(context,
+                            MaterialPageRoute(
+                                builder: (context) => NewListPage()))
+                      },
+                      backgroundColor: Theme
+                          .of(context)
+                          .primaryColor,
+                      shape: CircleBorder(),
+                      child: const Icon(
+                        FontAwesomeIcons.plus,
+                        color: Colors.white,
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            );
+    });
   }
 }
 

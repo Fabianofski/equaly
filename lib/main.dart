@@ -37,16 +37,15 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider<AppBarCubit>(create: (context) => AppBarCubit()),
         BlocProvider<NavigationCubit>(
           create: (context) => NavigationCubit(),
         ),
         BlocProvider<AuthCubit>(
           create: (context) => AuthCubit(),
         ),
-        BlocProvider<ExpenseListCubit>(
-            create: (context) => ExpenseListCubit()),
-        BlocProvider<AppBarCubit>(create: (context) => AppBarCubit()),
-         BlocProvider<SelectedExpenseListCubit>(
+        BlocProvider<ExpenseListCubit>(create: (context) => ExpenseListCubit(context.read<AuthCubit>())),
+        BlocProvider<SelectedExpenseListCubit>(
             create: (context) => SelectedExpenseListCubit(null))
       ],
       child: MaterialApp(
@@ -66,45 +65,38 @@ class App extends StatelessWidget {
           ),
           primaryColor: Color(0xFF15376A),
           textTheme: TextTheme(
-            titleMedium: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 24,
-            ),
-            titleSmall: TextStyle(
-              fontWeight: FontWeight.w900,
-            ),
-            bodySmall: TextStyle(
-              fontWeight: FontWeight.w100,
-              fontSize: 14,
-              color: Color(0x88060F1E)
-            ),
-            labelLarge: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-            ),
-            labelMedium: TextStyle(
-              fontSize: 16,
-            ),
-            labelSmall: TextStyle(
-              fontSize: 14,
-            )
-          ).apply(
+              titleMedium: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
+              titleSmall: TextStyle(
+                fontWeight: FontWeight.w900,
+              ),
+              bodySmall: TextStyle(
+                  fontWeight: FontWeight.w100,
+                  fontSize: 14,
+                  color: Color(0x88060F1E)),
+              labelLarge: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+              labelMedium: TextStyle(
+                fontSize: 16,
+              ),
+              labelSmall: TextStyle(
+                fontSize: 14,
+              )).apply(
             displayColor: Color(0xFF060F1E),
             bodyColor: Color(0xFF060F1E),
           ),
           filledButtonTheme: FilledButtonThemeData(
-            style: ButtonStyle(
-              fixedSize: WidgetStatePropertyAll(
-                Size.fromHeight(50)
-              ),
-              shape: WidgetStatePropertyAll(
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-              ),
-              backgroundColor: WidgetStatePropertyAll(
-                Color(0xFF15376A)
-              )
-            )
-          ),
+              style: ButtonStyle(
+                  fixedSize: WidgetStatePropertyAll(Size.fromHeight(50)),
+                  shape: WidgetStatePropertyAll(
+                    RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0)),
+                  ),
+                  backgroundColor: WidgetStatePropertyAll(Color(0xFF15376A)))),
           datePickerTheme: DatePickerThemeData(
             backgroundColor: Color(0xFFE9F0F7),
             shape: RoundedRectangleBorder(
@@ -120,38 +112,37 @@ class App extends StatelessWidget {
             ),
           ),
           inputDecorationTheme: InputDecorationTheme(
-            filled: true,
-            fillColor: Color(0xFFE9F0F7),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12.0),
-              borderSide: BorderSide(
+              filled: true,
+              fillColor: Color(0xFFE9F0F7),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: BorderSide(
+                  color: Colors.grey,
+                  width: 1.0,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: BorderSide(
+                  color: Colors.grey,
+                  width: 1.0,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: BorderSide(
+                  color: Color(0xFF15376A),
+                  width: 1.5,
+                ),
+              ),
+              hintStyle: TextStyle(
                 color: Colors.grey,
-                width: 1.0,
+                fontWeight: FontWeight.normal,
+                fontSize: 14,
               ),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12.0),
-              borderSide: BorderSide(
-                color: Colors.grey,
-                width: 1.0,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12.0),
-              borderSide: BorderSide(
-                color: Color(0xFF15376A),
-                width: 1.5,
-              ),
-            ),
-            hintStyle: TextStyle(
-              color: Colors.grey,
-              fontWeight: FontWeight.normal,
-              fontSize: 14,
-            ),
-            labelStyle: TextStyle(
-              fontSize: 16,
-            )
-          ),
+              labelStyle: TextStyle(
+                fontSize: 16,
+              )),
           scaffoldBackgroundColor: const Color(0xFFEEF4FC),
           canvasColor: Color(0xFFE3EBF4),
           useMaterial3: true,

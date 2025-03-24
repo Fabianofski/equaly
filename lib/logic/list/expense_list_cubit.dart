@@ -18,8 +18,9 @@ part 'expense_list_state.dart';
 
 class ExpenseListCubit extends Cubit<List<ExpenseListWrapperState>> {
   final AuthCubit authCubit;
+  final SelectedExpenseListCubit selectedCubit;
 
-  ExpenseListCubit(this.authCubit) : super([]) {
+  ExpenseListCubit(this.authCubit, this.selectedCubit) : super([]) {
     init();
   }
 
@@ -95,6 +96,62 @@ class ExpenseListCubit extends Cubit<List<ExpenseListWrapperState>> {
       if (response.statusCode != 200) {
         throw Exception("${response.statusCode} ${response.body}");
       }
+
+      final json = jsonDecode(utf8.decode(response.bodyBytes));
+      var resExpenseList = ExpenseListWrapperState.fromJson(json as Map<String, dynamic>);
+      emit([...state, resExpenseList]);
+
+      return true;
+    } on http.ClientException catch (_) {
+      showSnackBarWithException("Connection Timeout");
+      return false;
+    } on Exception catch (exception) {
+      showSnackBarWithException(exception.toString());
+      return false;
+    }
+  }
+
+  Future<bool> createExpense(String buyer, double amount, String description,
+      List<String> participants, DateTime date, String listId) async {
+    try {
+      final user = authCubit.state;
+
+      if (user == null) {
+        showSnackBarWithException("User not logged in");
+        return false;
+      }
+
+      var expenseList = ExpenseState(
+          buyer: buyer,
+          amount: amount,
+          description: description,
+          participants: participants,
+          date: date,
+          id: '',
+          expenseListId: listId);
+
+      var auth = await user.authentication;
+
+      var jsonEncoded = jsonEncode(expenseList.toJson());
+      final response = await http.post(
+          Uri.http('192.168.188.40:3000', '/v1/expense'),
+          headers: {
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer ${auth.idToken}"
+          },
+          body: jsonEncoded);
+
+      if (response.statusCode != 200) {
+        throw Exception("${response.statusCode} ${response.body}");
+      }
+
+      final json = jsonDecode(utf8.decode(response.bodyBytes));
+      var resExpenseList = ExpenseListWrapperState.fromJson(json as Map<String, dynamic>);
+      var index = state.indexWhere((list) => list.expenseList.id == listId);
+      state[index] = resExpenseList;
+      emit(state);
+      selectedCubit.selectNewList(resExpenseList);
+
       return true;
     } on http.ClientException catch (_) {
       showSnackBarWithException("Connection Timeout");

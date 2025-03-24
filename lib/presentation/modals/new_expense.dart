@@ -1,15 +1,13 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:equaly/logic/currency_mapper.dart';
 import 'package:equaly/logic/list/expense_list_cubit.dart';
 import 'package:equaly/presentation/components/user_profile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
-import '../../logic/list/expense_state.dart';
 import '../../logic/utils/snack_bar.dart';
 
 class NewExpenseModal extends StatefulWidget {
@@ -57,34 +55,13 @@ class _NewExpenseModalState extends State<NewExpenseModal> {
     });
   }
 
-  Future<void> createExpense(String buyer, double amount, String description,
-      List<String> participants, DateTime date) async {
-    try {
-      var expenseList = ExpenseState(
-          buyer: buyer,
-          amount: amount,
-          description: description,
-          participants: participants,
-          date: date,
-          id: '',
-          expenseListId: widget.list.id);
+  Future<void> createExpense() async {
+    var expenseListCubit = BlocProvider.of<ExpenseListCubit>(context);
+    var success = await expenseListCubit.createExpense(buyer!, converted, listTitle.text,
+        checkedParticipants, date, widget.list.id);
 
-      var jsonEncoded = jsonEncode(expenseList.toJson());
-      final response = await http.post(
-          Uri.http('192.168.188.40:3000', '/v1/expense'),
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncoded);
-
-      if (response.statusCode != 200) {
-        throw Exception("${response.statusCode} ${response.body}");
-      }
-      if (navigatorKey.currentContext != null) {
-        Navigator.pop(navigatorKey.currentContext!);
-      }
-    } on http.ClientException catch (_) {
-      showSnackBarWithException("Connection Timeout");
-    } on Exception catch (exception) {
-      showSnackBarWithException(exception.toString());
+    if (success && navigatorKey.currentContext != null) {
+      Navigator.pop(navigatorKey.currentContext!);
     }
   }
 
@@ -276,10 +253,7 @@ class _NewExpenseModalState extends State<NewExpenseModal> {
                 child: SizedBox(
                     width: double.infinity,
                     child: FilledButton(
-                      onPressed: () {
-                        createExpense(buyer!, converted, listTitle.text,
-                            checkedParticipants, date);
-                      },
+                      onPressed: createExpense,
                       style: theme.filledButtonTheme.style,
                       child: Text(
                         "Hinzufügen",

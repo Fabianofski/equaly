@@ -44,9 +44,14 @@ class App extends StatelessWidget {
         BlocProvider<AuthCubit>(
           create: (context) => AuthCubit(),
         ),
-        BlocProvider<ExpenseListCubit>(create: (context) => ExpenseListCubit(context.read<AuthCubit>())),
         BlocProvider<SelectedExpenseListCubit>(
-            create: (context) => SelectedExpenseListCubit(null))
+            create: (context) => SelectedExpenseListCubit(null)),
+        BlocProvider<ExpenseListCubit>(
+          create: (context) => ExpenseListCubit(
+            BlocProvider.of<AuthCubit>(context),
+            BlocProvider.of<SelectedExpenseListCubit>(context),
+          ),
+        ),
       ],
       child: MaterialApp(
         title: 'Equaly',

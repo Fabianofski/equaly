@@ -52,7 +52,8 @@ class ExpenseListCubit extends Cubit<List<ExpenseListWrapperState>> {
         var expenseList =
             ExpenseListWrapperState.fromJson(entry as Map<String, dynamic>);
         for (var participant in expenseList.expenseList.participants) {
-          participant.avatarUrl = await getPresignedProfilePicture(expenseList.expenseList.id, participant.id);
+          participant.avatarUrl = await getPresignedProfilePicture(
+              expenseList.expenseList.id, participant.id);
         }
         expenseLists.add(expenseList);
       }
@@ -75,16 +76,15 @@ class ExpenseListCubit extends Cubit<List<ExpenseListWrapperState>> {
 
     try {
       var expenseList = ExpenseListState(
-        id: "",
-        title: title,
-        totalCost: 0,
-        creatorId: user.id,
-        emoji: emoji,
-        color: color.value,
-        expenses: [],
-        currency: currency,
-        participants: participants
-      );
+          id: "",
+          title: title,
+          totalCost: 0,
+          creatorId: user.id,
+          emoji: emoji,
+          color: color.value,
+          expenses: [],
+          currency: currency,
+          participants: participants);
 
       var auth = await user.authentication;
       var jsonEncoded = jsonEncode(expenseList.toJson());
@@ -101,10 +101,15 @@ class ExpenseListCubit extends Cubit<List<ExpenseListWrapperState>> {
       }
 
       final json = jsonDecode(utf8.decode(response.bodyBytes));
-      var resExpenseList = ExpenseListWrapperState.fromJson(json as Map<String, dynamic>);
+      var resExpenseList =
+          ExpenseListWrapperState.fromJson(json as Map<String, dynamic>);
 
       for (var participant in participants) {
         await uploadProfilePicture(resExpenseList.expenseList.id, participant);
+      }
+      for (var participant in resExpenseList.expenseList.participants) {
+        participant.avatarUrl = await getPresignedProfilePicture(
+            resExpenseList.expenseList.id, participant.id);
       }
 
       emit([...state, resExpenseList]);
@@ -119,7 +124,8 @@ class ExpenseListCubit extends Cubit<List<ExpenseListWrapperState>> {
     }
   }
 
-  Future<bool> uploadProfilePicture(String expenseListId, ParticipantState participant) async {
+  Future<bool> uploadProfilePicture(
+      String expenseListId, ParticipantState participant) async {
     final user = authCubit.state;
 
     if (user == null) {
@@ -131,13 +137,13 @@ class ExpenseListCubit extends Cubit<List<ExpenseListWrapperState>> {
       var auth = await user.authentication;
       final request = http.MultipartRequest(
         'POST',
-        Uri.http(AppConfig.hostUrl, '/v1/static/profile/$expenseListId/${participant.id}'),
+        Uri.http(AppConfig.hostUrl,
+            '/v1/static/profile/$expenseListId/${participant.id}'),
       );
-      request.headers.addAll({
-        "Authorization": "Bearer ${auth.idToken}"
-      });
+      request.headers.addAll({"Authorization": "Bearer ${auth.idToken}"});
 
-      var file = await http.MultipartFile.fromPath('image', participant.avatarUrl);
+      var file =
+          await http.MultipartFile.fromPath('image', participant.avatarUrl);
       request.files.add(file);
 
       final response = await request.send();
@@ -150,12 +156,14 @@ class ExpenseListCubit extends Cubit<List<ExpenseListWrapperState>> {
       showSnackBarWithException("Connection Timeout");
       return false;
     } on Exception catch (exception) {
-      showSnackBarWithException("$exception Failed to upload profile of ${participant.name}");
+      showSnackBarWithException(
+          "$exception Failed to upload profile of ${participant.name}");
       return false;
     }
   }
 
-  Future<String> getPresignedProfilePicture(String expenseListId, String participantId) async {
+  Future<String> getPresignedProfilePicture(
+      String expenseListId, String participantId) async {
     final user = authCubit.state;
 
     if (user == null) {
@@ -165,10 +173,10 @@ class ExpenseListCubit extends Cubit<List<ExpenseListWrapperState>> {
 
     try {
       var auth = await user.authentication;
-      final presignUrl = Uri.http(AppConfig.hostUrl, "/v1/static/profile/$expenseListId/$participantId");
-      final response = await http.get(presignUrl, headers: {
-        "Authorization": "Bearer ${auth.idToken}"
-      });
+      final presignUrl = Uri.http(AppConfig.hostUrl,
+          "/v1/static/profile/$expenseListId/$participantId");
+      final response = await http.get(presignUrl,
+          headers: {"Authorization": "Bearer ${auth.idToken}"});
 
       if (response.statusCode != 200) {
         throw Exception("${response.statusCode}");
@@ -218,8 +226,18 @@ class ExpenseListCubit extends Cubit<List<ExpenseListWrapperState>> {
       }
 
       final json = jsonDecode(utf8.decode(response.bodyBytes));
-      var resExpenseList = ExpenseListWrapperState.fromJson(json as Map<String, dynamic>);
+      var resExpenseList =
+          ExpenseListWrapperState.fromJson(json as Map<String, dynamic>);
       var index = state.indexWhere((list) => list.expenseList.id == listId);
+      for (var participant in resExpenseList.expenseList.participants) {
+        var other = state[index]
+            .expenseList
+            .participants
+            .indexWhere((p) => p.id == participant.id);
+        participant.avatarUrl =
+            state[index].expenseList.participants[other].avatarUrl;
+      }
+
       state[index] = resExpenseList;
       emit(state);
       selectedCubit.selectNewList(resExpenseList);

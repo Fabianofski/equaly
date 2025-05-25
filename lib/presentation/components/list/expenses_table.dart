@@ -140,7 +140,7 @@ class ExpensesTable extends StatelessWidget {
             style: theme.textTheme.bodySmall,
           ),
           Text(
-            "${CurrencyMapper.getSymbol(list.currency)}${(list.totalCost / 6).toStringAsFixed(2)}",
+            "${CurrencyMapper.getSymbol(list.currency)}${(list.totalCost / list.participants.length).toStringAsFixed(2)}",
             style: theme.textTheme.titleSmall,
           )
         ],

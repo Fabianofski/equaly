@@ -26,8 +26,7 @@ class UserProfile extends StatelessWidget {
           children: [
             CircleAvatar(
               maxRadius: 18,
-              backgroundImage:
-                  avatarUrl != null ? FileImage(File(avatarUrl!)) : null,
+              backgroundImage: avatarUrl!.startsWith("file") ? FileImage(File(avatarUrl!)) : NetworkImage(avatarUrl!),
               backgroundColor: theme.canvasColor,
               child: avatarUrl == null
                   ? Icon(

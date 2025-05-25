@@ -12,6 +12,7 @@ class CustomAppBar extends StatelessWidget {
     return AppBar(
       elevation: 0,
       toolbarHeight: 110,
+      scrolledUnderElevation: 0,
       title: Padding(
         padding: EdgeInsets.only(top: 20.0),
         child: Column(

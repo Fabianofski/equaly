@@ -1,7 +1,9 @@
+import 'package:equaly/logic/config.dart';
+
 class ParticipantState {
   final String id;
   final String name;
-  final String avatarUrl;
+  String avatarUrl;
 
   ParticipantState({
     required this.avatarUrl,
@@ -16,14 +18,13 @@ class ParticipantState {
         "avatarUrl": avatarUrl,
       };
 
-  factory ParticipantState.fromJson(Map<String, dynamic> json) {
+  factory ParticipantState.fromJson(Map<String, dynamic> json, String expenseListId) {
     return switch (json) {
       {
       'id': String id,
       'name': String name,
-      'avatarUrl': String avatarUrl,
       } =>
-          ParticipantState(avatarUrl: avatarUrl, name: name, id: id),
+          ParticipantState(avatarUrl: Uri.http(AppConfig.hostUrl, "/v1/static/profile/$expenseListId/$id").toString(), name: name, id: id),
     _ => throw const FormatException("Failed to load Participant from Json"),
     };
   }

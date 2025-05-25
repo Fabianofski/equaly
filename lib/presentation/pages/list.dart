@@ -1,5 +1,4 @@
 import 'package:equaly/logic/app_bar/app_bar_cubit.dart';
-import 'package:equaly/logic/auth/auth_cubit.dart';
 import 'package:equaly/logic/list/expense_list_compensation_state.dart';
 import 'package:equaly/logic/list/expense_list_cubit.dart';
 import 'package:equaly/logic/list/expense_list_share_state.dart';
@@ -11,7 +10,6 @@ import 'package:equaly/presentation/modals/new_expense.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 class ListPage extends StatelessWidget {
   const ListPage({super.key});

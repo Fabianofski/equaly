@@ -62,7 +62,7 @@ class ExpenseListState extends Equatable {
           expenses: List<ExpenseState>.from(
               expenses.map((item) => ExpenseState.fromJson(item))),
           participants: List<ParticipantState>.from(
-              participants.map((item) => ParticipantState.fromJson(item))),
+              participants.map((item) => ParticipantState.fromJson(item, id))),
         ),
       _ => throw const FormatException("Failed to load Expense List from Json"),
     };

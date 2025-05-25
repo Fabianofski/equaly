@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:ui';
 
 import 'package:equaly/logic/auth/auth_cubit.dart';
+import 'package:equaly/logic/config.dart';
 import 'package:equaly/logic/list/expense_list_wrapper_state.dart';
 import 'package:equaly/logic/list/participant_state.dart';
 import 'package:equatable/equatable.dart';
@@ -41,7 +41,7 @@ class ExpenseListCubit extends Cubit<List<ExpenseListWrapperState>> {
     try {
       GoogleSignInAuthentication auth = await user.authentication;
       final response = await http.get(
-          Uri.http('192.168.188.40:3000', '/v1/expense-lists'),
+          Uri.http(AppConfig.hostUrl, '/v1/expense-lists'),
           headers: {"Authorization": "Bearer ${auth.idToken}"});
       if (response.statusCode != 200) {
         throw Exception("${response.statusCode} ${response.body}");
@@ -51,6 +51,9 @@ class ExpenseListCubit extends Cubit<List<ExpenseListWrapperState>> {
       for (var entry in jsonData) {
         var expenseList =
             ExpenseListWrapperState.fromJson(entry as Map<String, dynamic>);
+        for (var participant in expenseList.expenseList.participants) {
+          participant.avatarUrl = await getPresignedProfilePicture(expenseList.expenseList.id, participant.id);
+        }
         expenseLists.add(expenseList);
       }
       emit(expenseLists);
@@ -80,13 +83,13 @@ class ExpenseListCubit extends Cubit<List<ExpenseListWrapperState>> {
         color: color.value,
         expenses: [],
         currency: currency,
-        participants: participants,
+        participants: participants
       );
 
       var auth = await user.authentication;
       var jsonEncoded = jsonEncode(expenseList.toJson());
       final response = await http.post(
-          Uri.http('192.168.188.40:3000', '/v1/expense-list'),
+          Uri.http(AppConfig.hostUrl, '/v1/expense-list'),
           headers: {
             'Content-Type': 'application/json',
             "Authorization": "Bearer ${auth.idToken}"
@@ -99,6 +102,11 @@ class ExpenseListCubit extends Cubit<List<ExpenseListWrapperState>> {
 
       final json = jsonDecode(utf8.decode(response.bodyBytes));
       var resExpenseList = ExpenseListWrapperState.fromJson(json as Map<String, dynamic>);
+
+      for (var participant in participants) {
+        await uploadProfilePicture(resExpenseList.expenseList.id, participant);
+      }
+
       emit([...state, resExpenseList]);
 
       return true;
@@ -108,6 +116,70 @@ class ExpenseListCubit extends Cubit<List<ExpenseListWrapperState>> {
     } on Exception catch (exception) {
       showSnackBarWithException(exception.toString());
       return false;
+    }
+  }
+
+  Future<bool> uploadProfilePicture(String expenseListId, ParticipantState participant) async {
+    final user = authCubit.state;
+
+    if (user == null) {
+      showSnackBarWithException("User not logged in");
+      return false;
+    }
+
+    try {
+      var auth = await user.authentication;
+      final request = http.MultipartRequest(
+        'POST',
+        Uri.http(AppConfig.hostUrl, '/v1/static/profile/$expenseListId/${participant.id}'),
+      );
+      request.headers.addAll({
+        "Authorization": "Bearer ${auth.idToken}"
+      });
+
+      var file = await http.MultipartFile.fromPath('image', participant.avatarUrl);
+      request.files.add(file);
+
+      final response = await request.send();
+
+      if (response.statusCode != 200) {
+        throw Exception("${response.statusCode}");
+      }
+      return true;
+    } on http.ClientException catch (_) {
+      showSnackBarWithException("Connection Timeout");
+      return false;
+    } on Exception catch (exception) {
+      showSnackBarWithException("$exception Failed to upload profile of ${participant.name}");
+      return false;
+    }
+  }
+
+  Future<String> getPresignedProfilePicture(String expenseListId, String participantId) async {
+    final user = authCubit.state;
+
+    if (user == null) {
+      showSnackBarWithException("User not logged in");
+      return "";
+    }
+
+    try {
+      var auth = await user.authentication;
+      final presignUrl = Uri.http(AppConfig.hostUrl, "/v1/static/profile/$expenseListId/$participantId");
+      final response = await http.get(presignUrl, headers: {
+        "Authorization": "Bearer ${auth.idToken}"
+      });
+
+      if (response.statusCode != 200) {
+        throw Exception("${response.statusCode}");
+      }
+      return response.body;
+    } on http.ClientException catch (_) {
+      showSnackBarWithException("Connection Timeout");
+      return "";
+    } on Exception catch (exception) {
+      showSnackBarWithException(exception.toString());
+      return "";
     }
   }
 
@@ -134,7 +206,7 @@ class ExpenseListCubit extends Cubit<List<ExpenseListWrapperState>> {
 
       var jsonEncoded = jsonEncode(expenseList.toJson());
       final response = await http.post(
-          Uri.http('192.168.188.40:3000', '/v1/expense'),
+          Uri.http(AppConfig.hostUrl, '/v1/expense'),
           headers: {
             'Content-Type': 'application/json',
             "Authorization": "Bearer ${auth.idToken}"

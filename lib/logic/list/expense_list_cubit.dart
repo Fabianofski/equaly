@@ -41,7 +41,7 @@ class ExpenseListCubit extends Cubit<List<ExpenseListWrapperState>> {
     try {
       GoogleSignInAuthentication auth = await user.authentication;
       final response = await http.get(
-          Uri.https(AppConfig.hostUrl, '/v1/expense-lists'),
+          Uri.http(AppConfig.hostUrl, '/v1/expense-lists'),
           headers: {"Authorization": "Bearer ${auth.idToken}"});
       if (response.statusCode != 200) {
         throw Exception("${response.statusCode} ${response.body}");
@@ -58,6 +58,67 @@ class ExpenseListCubit extends Cubit<List<ExpenseListWrapperState>> {
         expenseLists.add(expenseList);
       }
       emit(expenseLists);
+    } on http.ClientException catch (_) {
+      showSnackBarWithException("Connection Timeout");
+    } on Exception catch (exception) {
+      showSnackBarWithException(exception.toString());
+    }
+  }
+
+  Future<ExpenseListWrapperState?> fetchExpenseListWithInviteCode(
+      String listId, String inviteCode) async {
+    final user = authCubit.state;
+
+    if (user == null) {
+      showSnackBarWithException("User is not logged in");
+      return Future.value();
+    }
+
+    try {
+      GoogleSignInAuthentication auth = await user.authentication;
+      final response = await http.get(
+          Uri.http(AppConfig.hostUrl, '/v1/expense-list', {
+            "expenseListId": listId,
+            "inviteCode": inviteCode,
+          }),
+          headers: {"Authorization": "Bearer ${auth.idToken}"});
+      if (response.statusCode != 200) {
+        throw Exception("${response.statusCode} ${response.body}");
+      }
+      final jsonData = jsonDecode(utf8.decode(response.bodyBytes));
+      return ExpenseListWrapperState.fromJson(jsonData as Map<String, dynamic>);
+    } on http.ClientException catch (_) {
+      showSnackBarWithException("Connection Timeout");
+    } on Exception catch (exception) {
+      showSnackBarWithException(exception.toString());
+    }
+    return null;
+  }
+
+  Future<void> joinExpenseListWithInviteCode(
+      String listId, String inviteCode) async {
+    final user = authCubit.state;
+
+    if (user == null) {
+      showSnackBarWithException("User is not logged in");
+      return Future.value();
+    }
+
+    try {
+      GoogleSignInAuthentication auth = await user.authentication;
+      final response = await http.post(
+          Uri.http(AppConfig.hostUrl, '/v1/expense-list/join', {
+            "expenseListId": listId,
+            "inviteCode": inviteCode,
+          }),
+          headers: {"Authorization": "Bearer ${auth.idToken}"});
+      if (response.statusCode != 200) {
+        throw Exception("${response.statusCode} ${response.body}");
+      }
+      final jsonData = jsonDecode(utf8.decode(response.bodyBytes));
+      final expenseList =
+          ExpenseListWrapperState.fromJson(jsonData as Map<String, dynamic>);
+      emit([...state, expenseList]);
     } on http.ClientException catch (_) {
       showSnackBarWithException("Connection Timeout");
     } on Exception catch (exception) {
@@ -89,7 +150,7 @@ class ExpenseListCubit extends Cubit<List<ExpenseListWrapperState>> {
       var auth = await user.authentication;
       var jsonEncoded = jsonEncode(expenseList.toJson());
       final response = await http.post(
-          Uri.https(AppConfig.hostUrl, '/v1/expense-list'),
+          Uri.http(AppConfig.hostUrl, '/v1/expense-list'),
           headers: {
             'Content-Type': 'application/json',
             "Authorization": "Bearer ${auth.idToken}"
@@ -137,7 +198,7 @@ class ExpenseListCubit extends Cubit<List<ExpenseListWrapperState>> {
       var auth = await user.authentication;
       final request = http.MultipartRequest(
         'POST',
-        Uri.https(AppConfig.hostUrl,
+        Uri.http(AppConfig.hostUrl,
             '/v1/static/profile/$expenseListId/${participant.id}'),
       );
       request.headers.addAll({"Authorization": "Bearer ${auth.idToken}"});
@@ -173,7 +234,7 @@ class ExpenseListCubit extends Cubit<List<ExpenseListWrapperState>> {
 
     try {
       var auth = await user.authentication;
-      final presignUrl = Uri.https(AppConfig.hostUrl,
+      final presignUrl = Uri.http(AppConfig.hostUrl,
           "/v1/static/profile/$expenseListId/$participantId");
       final response = await http.get(presignUrl,
           headers: {"Authorization": "Bearer ${auth.idToken}"});
@@ -214,7 +275,7 @@ class ExpenseListCubit extends Cubit<List<ExpenseListWrapperState>> {
 
       var jsonEncoded = jsonEncode(expenseList.toJson());
       final response = await http.post(
-          Uri.https(AppConfig.hostUrl, '/v1/expense'),
+          Uri.http(AppConfig.hostUrl, '/v1/expense'),
           headers: {
             'Content-Type': 'application/json',
             "Authorization": "Bearer ${auth.idToken}"

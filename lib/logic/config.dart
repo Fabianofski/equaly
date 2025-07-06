@@ -1,3 +1,3 @@
 class AppConfig {
-  static const hostUrl = "equaly.f4b1.dev";
+  static const hostUrl = "192.168.178.22:3000";
 }

@@ -1,12 +1,15 @@
+import 'dart:developer';
+
 import 'package:equaly/logic/app_bar/app_bar_cubit.dart';
 import 'package:equaly/logic/auth/auth_cubit.dart';
 import 'package:equaly/logic/currency_mapper.dart';
-import 'package:equaly/presentation/pages/profile.dart';
-import 'package:equaly/presentation/wireframe/bottom_nav.dart';
-import 'package:equaly/presentation/wireframe/app_bar.dart';
 import 'package:equaly/logic/list/expense_list_cubit.dart';
 import 'package:equaly/logic/navigation/constants/nav_bar_items.dart';
 import 'package:equaly/logic/navigation/navigation_cubit.dart';
+import 'package:equaly/presentation/modals/invite.dart';
+import 'package:equaly/presentation/pages/profile.dart';
+import 'package:equaly/presentation/wireframe/app_bar.dart';
+import 'package:equaly/presentation/wireframe/bottom_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -57,6 +60,25 @@ class App extends StatelessWidget {
         title: 'Equaly',
         navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
+        onGenerateRoute: (settings) {
+          final uri = Uri.parse(settings.name ?? '');
+          log(uri.toString());
+          log(uri.pathSegments.first);
+          if (uri.pathSegments.first == "join") {
+            final listId = uri.queryParameters['expenseListId'];
+            final inviteCode = uri.queryParameters['inviteCode'];
+            if (listId == null || inviteCode == null) {
+              return null;
+            }
+            return MaterialPageRoute(
+              builder: (context) => InvitationModal(
+                listId: listId,
+                inviteCode: inviteCode,
+              ),
+            );
+          }
+          return null;
+        },
         theme: ThemeData(
           fontFamily: 'Open Sans',
           appBarTheme: const AppBarTheme(

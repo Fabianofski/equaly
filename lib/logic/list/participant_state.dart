@@ -24,7 +24,7 @@ class ParticipantState {
       'id': String id,
       'name': String name,
       } =>
-          ParticipantState(avatarUrl: Uri.http(AppConfig.hostUrl, "/v1/static/profile/$expenseListId/$id").toString(), name: name, id: id),
+          ParticipantState(avatarUrl: Uri.https(AppConfig.hostUrl, "/v1/static/profile/$expenseListId/$id").toString(), name: name, id: id),
     _ => throw const FormatException("Failed to load Participant from Json"),
     };
   }

@@ -13,10 +13,12 @@ class CustomBottomNavigationBar extends StatelessWidget {
     return BlocBuilder<NavigationCubit, NavigationState>(
       builder: (context, state) {
         return SizedBox(
-          height: 80,
+          height: 100,
           child: BottomNavigationBar(
               onTap: (index) {
-                if (index == 1 && BlocProvider.of<SelectedExpenseListCubit>(context).state == null) {
+                if (index == 1 &&
+                    BlocProvider.of<SelectedExpenseListCubit>(context).state ==
+                        null) {
                   return;
                 }
                 BlocProvider.of<NavigationCubit>(context).setNavBarItem(index);
@@ -28,21 +30,15 @@ class CustomBottomNavigationBar extends StatelessWidget {
               selectedItemColor: theme.primaryColor,
               unselectedItemColor: theme.primaryColor.withOpacity(0.5),
               iconSize: 26,
-              selectedIconTheme: IconThemeData(
-                size: 30
-              ),
+              selectedIconTheme: IconThemeData(size: 30),
               elevation: 0,
               items: [
                 BottomNavigationBarItem(
                     label: "Home", icon: Icon(FontAwesomeIcons.house)),
                 BottomNavigationBarItem(
-                  label: "List",
-                  icon: Icon(FontAwesomeIcons.fileInvoice)
-                ),
+                    label: "List", icon: Icon(FontAwesomeIcons.fileInvoice)),
                 BottomNavigationBarItem(
-                  label: "Settings",
-                  icon: Icon(FontAwesomeIcons.gear)
-                ),
+                    label: "Settings", icon: Icon(FontAwesomeIcons.gear)),
                 BottomNavigationBarItem(
                   label: "Profile",
                   icon: Icon(FontAwesomeIcons.solidUser),

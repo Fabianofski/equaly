@@ -41,7 +41,7 @@ class ExpenseListCubit extends Cubit<List<ExpenseListWrapperState>> {
     try {
       GoogleSignInAuthentication auth = await user.authentication;
       final response = await http.get(
-          Uri.http(AppConfig.hostUrl, '/v1/expense-lists'),
+          Uri.https(AppConfig.hostUrl, '/v1/expense-lists'),
           headers: {"Authorization": "Bearer ${auth.idToken}"});
       if (response.statusCode != 200) {
         throw Exception("${response.statusCode} ${response.body}");
@@ -89,7 +89,7 @@ class ExpenseListCubit extends Cubit<List<ExpenseListWrapperState>> {
       var auth = await user.authentication;
       var jsonEncoded = jsonEncode(expenseList.toJson());
       final response = await http.post(
-          Uri.http(AppConfig.hostUrl, '/v1/expense-list'),
+          Uri.https(AppConfig.hostUrl, '/v1/expense-list'),
           headers: {
             'Content-Type': 'application/json',
             "Authorization": "Bearer ${auth.idToken}"
@@ -137,7 +137,7 @@ class ExpenseListCubit extends Cubit<List<ExpenseListWrapperState>> {
       var auth = await user.authentication;
       final request = http.MultipartRequest(
         'POST',
-        Uri.http(AppConfig.hostUrl,
+        Uri.https(AppConfig.hostUrl,
             '/v1/static/profile/$expenseListId/${participant.id}'),
       );
       request.headers.addAll({"Authorization": "Bearer ${auth.idToken}"});
@@ -173,7 +173,7 @@ class ExpenseListCubit extends Cubit<List<ExpenseListWrapperState>> {
 
     try {
       var auth = await user.authentication;
-      final presignUrl = Uri.http(AppConfig.hostUrl,
+      final presignUrl = Uri.https(AppConfig.hostUrl,
           "/v1/static/profile/$expenseListId/$participantId");
       final response = await http.get(presignUrl,
           headers: {"Authorization": "Bearer ${auth.idToken}"});
@@ -214,7 +214,7 @@ class ExpenseListCubit extends Cubit<List<ExpenseListWrapperState>> {
 
       var jsonEncoded = jsonEncode(expenseList.toJson());
       final response = await http.post(
-          Uri.http(AppConfig.hostUrl, '/v1/expense'),
+          Uri.https(AppConfig.hostUrl, '/v1/expense'),
           headers: {
             'Content-Type': 'application/json',
             "Authorization": "Bearer ${auth.idToken}"
